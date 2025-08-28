@@ -4,6 +4,8 @@ import { NodeAndEdgeProps } from '@/components/NodeAndEdge/type';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 
 export default function DemoPage() {
   const nodeAndEdgeProps: NodeAndEdgeProps = {
@@ -60,6 +62,28 @@ export default function DemoPage() {
               <SelectItem value="3">Item 3</SelectItem>
             </SelectContent>
           </Select>
+          <Dialog>
+            <DialogTrigger>Open</DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete your account
+                  and remove your data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+          <Tabs defaultValue="1">
+            <TabsList>
+              <TabsTrigger value="1">Item 1</TabsTrigger>
+              <TabsTrigger value="2">Item 2</TabsTrigger>
+              <TabsTrigger value="3">Item 3</TabsTrigger>
+            </TabsList>
+            <TabsContent value="1">Item 1</TabsContent>
+            <TabsContent value="2">Item 2</TabsContent>
+            <TabsContent value="3">Item 3</TabsContent>
+          </Tabs>
         </div>
         <h2 className="mb-4 text-xl font-semibold">
           相性図サンプル

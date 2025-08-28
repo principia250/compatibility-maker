@@ -1,23 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { 
+  Pencil,
   User, 
   LogOut, 
-  Settings, 
   Menu,
   X 
 } from 'lucide-react';
+import { useUser } from '@/hooks/use-user';
 
 export interface HeaderProps {
   className?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  
+  // カスタムフックからユーザーデータを取得
+  const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+
+  // クライアントサイドでのみ実行されることを保証
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // ユーザーデータの取得
+  useEffect(() => {
+    if (isClient) {
+      fetchUser();
+    }
+  }, [isClient, fetchUser]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -59,25 +76,36 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             </Link>
             <Link 
               href="/guidelines" 
-              className="text-foreground hover:text-primary transition-colors"
+              className="hover:text-primary transition-colors"
             >
-              ガイドライン
+              <span className="flex items-center">
+                Make
+                <Pencil className="w-6 h-6" />
+              </span>
             </Link>
           </nav>
 
           {/* ユーザーメニュー */}
           <div className="flex items-center space-x-4">
             {/* デスクトップユーザーメニュー */}
-            <div className="hidden md:flex items-center space-x-2">
-              <Button variant="ghost" size="sm" onClick={toggleUserMenu}>
-                <User className="w-4 h-4 mr-2" />
-                ユーザー名
-              </Button>
-              <Button variant="outline" size="sm">
-                <LogOut className="w-4 h-4 mr-2" />
-                ログアウト
-              </Button>
-            </div>
+                         <div className="hidden md:flex items-center space-x-2">
+               {isAuthenticated ? (
+                 <>
+                   <Button variant="ghost" size="sm" onClick={toggleUserMenu} disabled={isLoading}>
+                     <User className="w-4 h-4 mr-2" />
+                     {isLoading ? '読み込み中...' : username}
+                   </Button>
+                   <Button variant="outline" size="sm" onClick={logout} disabled={isLoading}>
+                     <LogOut className="w-4 h-4 mr-2" />
+                     ログアウト
+                   </Button>
+                 </>
+               ) : (
+                 <Button variant="outline" size="sm" asChild>
+                   <Link href="/auth/sign-in">ログイン</Link>
+                 </Button>
+               )}
+             </div>
 
             {/* モバイルメニューボタン */}
             <Button
@@ -120,16 +148,30 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               >
                 ガイドライン
               </Link>
-              <div className="border-t border-border pt-3 mt-3">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <User className="w-4 h-4 mr-2" />
-                  ユーザー名
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start mt-2">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  ログアウト
-                </Button>
-              </div>
+                             <div className="border-t border-border pt-3 mt-3">
+                 {isAuthenticated ? (
+                   <>
+                     <Button variant="ghost" size="sm" className="w-full justify-start" disabled={isLoading}>
+                       <User className="w-4 h-4 mr-2" />
+                       {isLoading ? '読み込み中...' : username}
+                     </Button>
+                     <Button 
+                       variant="outline" 
+                       size="sm" 
+                       className="w-full justify-start mt-2"
+                       onClick={logout}
+                       disabled={isLoading}
+                     >
+                       <LogOut className="w-4 h-4 mr-2" />
+                       ログアウト
+                     </Button>
+                   </>
+                 ) : (
+                   <Button variant="outline" size="sm" className="w-full justify-start" asChild>
+                     <Link href="/auth/sign-in">ログイン</Link>
+                   </Button>
+                 )}
+               </div>
             </nav>
           </div>
         )}

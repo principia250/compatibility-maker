@@ -1,0 +1,104 @@
+"use client";
+
+import { redirect } from "next/navigation";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useUser } from "@/hooks/use-user";
+import Loading from "@/components/loading";
+import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
+import { Button } from "@/components/ui/button";
+import { Pencil, CopyPlus, Trash2 } from "lucide-react";
+
+export default function MypagePage() {
+  const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "myChart";
+  const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+  const [mypageData, setMypageData] = useState<MypageData | null>(null)
+
+  useEffect(() => {
+    if(isLoading) {
+        setIsLoadingState(false)
+    }
+  },[isLoading])
+
+  useEffect(() => {
+    const fetch = async () => {
+        if (user?.id !== null && user?.id !== undefined && user?.id !== '') {
+            const { data: mypageData, error: mypageError } = await fetchMypageData({ userId: user.id })
+            if (mypageError) {
+                throw mypageError
+            }
+            setMypageData(mypageData)
+        }
+    }
+    fetch()
+  },[user])
+
+  if(isLoading || isLoadingState) {
+    return <Loading />
+  }
+
+  if(!isLoading && !isLoadingState && !isAuthenticated) {
+    redirect("/auth/login")
+  }
+
+  return (
+    <div className="w-full">
+        <Tabs defaultValue={tab}>
+            <TabsList className="mb-4">
+                <TabsTrigger value="myChart">My charts</TabsTrigger>
+                <TabsTrigger value="bookmark">Bookmark</TabsTrigger>
+            </TabsList>
+
+            {/* マイチャート */}
+            <TabsContent value="myChart">
+                <div className="flex flex-col gap-6">
+                    {mypageData?.maxCharts && mypageData?.charts && mypageData?.maxCharts > mypageData?.charts.length
+                        ?
+                        <Button variant="positive" className="w-full">
+                            Make a compatibility chart
+                        </Button>
+                        :
+                        <span className="text-[#ff0000]">
+                            You have reached the maximum number of charts you can create.
+                        </span>
+                    }
+                    {
+                        mypageData?.charts.map((chart) => (
+                            <div className="flex flex-row gap-2 items-center" key={chart.id}>
+                                <Button>Edit<Pencil className="w-4 h-4" /></Button>
+                                {mypageData?.maxCharts && mypageData?.charts && mypageData?.charts.length < mypageData?.maxCharts &&
+                                    <Button>Duplicate<CopyPlus className="w-4 h-4" /></Button>
+                                }
+                                <div className="flex-1 line-clamp-2 overflow-hidden text-ellipsis">
+                                    {chart.title}
+                                </div>
+                                <Button variant="destructive">Delete<Trash2 className="w-4 h-4" /></Button>
+                            </div>
+                        ))
+                    }
+
+                </div>
+            </TabsContent>
+
+            {/* ブックマーク */}
+            <TabsContent value="bookmark">
+                <div className="flex flex-col gap-6 cursor-pointer">
+                    {mypageData?.bookmarks.map((bookmark) => (
+                        <div className="" key={bookmark.id}>
+                            <div className="flex-1 line-clamp-2 overflow-hidden text-ellipsis">
+                                {bookmark.compatibilityChart.title}
+                            </div>
+                            <div className="text-xs overflow-hidden text-ellipsis">
+                                Made by: {bookmark.compatibilityChart.user.username}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </TabsContent>
+        </Tabs>
+    </div>
+  );
+}

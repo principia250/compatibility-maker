@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col`}>
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 my-8">
           <div className="max-w-[900px] mx-auto">
             {children}
           </div>
