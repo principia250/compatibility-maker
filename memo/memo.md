@@ -3,10 +3,11 @@ figd_NMega5CtSKh0atz5ZirkoaQohtuIfxcVvSjF_Qg8
 
 ## supabase
 project name:compatibility-maker
-project id:zcondaivkgqauckrrzgp
-pass:NorrI1FUmd3kqBAU
+project id:imbbefewzuxwvstzetzf
+pass:Qh48mkxtq4xw01qJ
 
-supabase gen types typescript --project-id zcondaivkgqauckrrzgp > database.types.ts
+supabase link --project-ref imbbefewzuxwvstzetzf
+supabase gen types typescript --project-id imbbefewzuxwvstzetzf > database.types.ts
 
 
 

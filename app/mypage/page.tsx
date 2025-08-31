@@ -9,6 +9,7 @@ import Loading from "@/components/loading";
 import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
 import { Button } from "@/components/ui/button";
 import { Pencil, CopyPlus, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export default function MypagePage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
@@ -18,7 +19,7 @@ export default function MypagePage() {
   const [mypageData, setMypageData] = useState<MypageData | null>(null)
 
   useEffect(() => {
-    if(isLoading) {
+    if(isLoading || user) {
         setIsLoadingState(false)
     }
   },[isLoading])
@@ -36,7 +37,7 @@ export default function MypagePage() {
     fetch()
   },[user])
 
-  if(isLoading || isLoadingState) {
+  if(isLoading || isLoadingState || !mypageData) {
     return <Loading />
   }
 
@@ -45,7 +46,7 @@ export default function MypagePage() {
   }
 
   return (
-    <div className="w-full">
+    <>
         <Tabs defaultValue={tab}>
             <TabsList className="mb-4">
                 <TabsTrigger value="myChart">My charts</TabsTrigger>
@@ -72,9 +73,9 @@ export default function MypagePage() {
                                 {mypageData?.maxCharts && mypageData?.charts && mypageData?.charts.length < mypageData?.maxCharts &&
                                     <Button>Duplicate<CopyPlus className="w-4 h-4" /></Button>
                                 }
-                                <div className="flex-1 line-clamp-2 overflow-hidden text-ellipsis">
+                                <Link href={`/chart/${chart.id}`} className="flex-1 line-clamp-2 overflow-hidden text-ellipsis cursor-pointer hover:text-primary">
                                     {chart.title}
-                                </div>
+                                </Link>
                                 <Button variant="destructive">Delete<Trash2 className="w-4 h-4" /></Button>
                             </div>
                         ))
@@ -85,20 +86,20 @@ export default function MypagePage() {
 
             {/* ブックマーク */}
             <TabsContent value="bookmark">
-                <div className="flex flex-col gap-6 cursor-pointer">
+                <div className="flex flex-col gap-6">
                     {mypageData?.bookmarks.map((bookmark) => (
-                        <div className="" key={bookmark.id}>
+                        <Link href={`/chart/${bookmark.compatibilityChart.id}`} key={bookmark.id} className=" cursor-pointer hover:text-primary">
                             <div className="flex-1 line-clamp-2 overflow-hidden text-ellipsis">
                                 {bookmark.compatibilityChart.title}
                             </div>
                             <div className="text-xs overflow-hidden text-ellipsis">
                                 Made by: {bookmark.compatibilityChart.user.username}
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </TabsContent>
         </Tabs>
-    </div>
+    </>
   );
 }

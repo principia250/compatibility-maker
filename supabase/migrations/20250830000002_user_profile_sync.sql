@@ -1,31 +1,6 @@
--- 新しいplan_idカラムを追加（一時的にNULL許可）
-ALTER TABLE users 
-ADD COLUMN plan_id UUID REFERENCES plans(id);
+-- ユーザープロファイル同期のためのファンクションとトリガー
 
--- plan_idカラムにインデックスを作成
-CREATE INDEX idx_users_plan_id ON users(plan_id);
-
--- plan_typeの値に基づいてplan_idを設定
-UPDATE users 
-SET plan_id = (
-    SELECT id FROM plans 
-    WHERE name = users.plan_type
-    LIMIT 1
-);
-
--- plan_idカラムをNOT NULLに変更
-ALTER TABLE users 
-ALTER COLUMN plan_id SET NOT NULL;
-
--- 古いplan_typeカラムのインデックスを削除
-DROP INDEX IF EXISTS idx_users_plan_type;
-
--- 古いplan_typeカラムを削除
-ALTER TABLE users 
-DROP COLUMN plan_type;
-
--- ユーザープロファイル同期ファンクションを修正
--- 新規ユーザーにfreeプランを自動設定するように変更
+-- 1. ユーザープロファイル同期ファンクションの作成
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -58,3 +33,15 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 2. トリガーの作成
+-- auth.usersテーブルにINSERTが発生した際にhandle_new_userファンクションを実行
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 3. ファンクションとトリガーの権限設定
+-- ファンクションの実行権限を適切に設定
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO anon;

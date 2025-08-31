@@ -1,0 +1,42 @@
+"use client";
+
+import { redirect } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useUser } from "@/hooks/use-user";
+import Loading from "@/components/loading";
+
+export default function ChartDetailPage() {
+    const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
+    const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+    const [data, setData] = useState<Data | null>(null)
+
+    useEffect(() => {
+        if(isLoading || user) {
+            setIsLoadingState(false)
+        }
+    },[isLoading])
+
+    useEffect(() => {
+        const fetch = async () => {
+            if (user?.id !== null && user?.id !== undefined && user?.id !== '') {
+                const { data: data, error: error } = await fetchData()
+                if (error) {
+                    throw error
+                }
+                setData(data)
+            }
+        }
+        fetch()
+    },[user])
+
+    if(isLoading || isLoadingState || !data) {
+        return <Loading />
+    }
+
+    if(!isLoading && !isLoadingState && !isAuthenticated) {
+        redirect("/auth/login")
+    }
+    return (<>
+    
+    </>)
+}

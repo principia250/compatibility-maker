@@ -39,14 +39,15 @@ export const fetchMypageData = async (props: MypageDataParams): Promise<Response
                     id, 
                     compatibility_charts:chart_id(
                         id, 
-                        title, 
+                        title,
                         users:user_id(
-                            id, 
+                            id,
                             username
                         )
                     )
                 `)
-                .eq('user_id', props.userId),
+                .eq('user_id', props.userId)
+                .eq('compatibility_charts.is_public', true),
             
             supabase
                 .from('compatibility_charts')
@@ -84,17 +85,19 @@ export const fetchMypageData = async (props: MypageDataParams): Promise<Response
         return {
             data: {
                 maxCharts: maxCharts,
-                bookmarks: bookmarksData ? bookmarksData.map((bookmark) =>({
-                    id: bookmark.id,
-                    compatibilityChart: {
-                        id: bookmark.compatibility_charts.id,
-                        title: bookmark.compatibility_charts.title,
-                        user: {
-                            id: bookmark.compatibility_charts.users.id,
-                            username: bookmark.compatibility_charts.users.username
+                bookmarks: bookmarksData ? bookmarksData
+                    .filter(bookmark => bookmark.compatibility_charts !== null) // nullチェック
+                    .map((bookmark) =>({
+                        id: bookmark.id,
+                        compatibilityChart: {
+                            id: bookmark.compatibility_charts!.id,
+                            title: bookmark.compatibility_charts!.title,
+                            user: {
+                                id: bookmark.compatibility_charts!.users.id,
+                                username: bookmark.compatibility_charts!.users.username
+                            }
                         }
-                    }
-                })) : [],
+                    })) : [],
                 charts: charts ? charts.map((chart) => ({
                     id: chart.id,
                     title: chart.title

@@ -1,10 +1,6 @@
 export interface Element {
     id: string;
     text: string;
-    isVisible: boolean;
-    displayScore: boolean;
-    canHide: boolean;
-    allCompatibilityExsist: boolean;
 }
 
 export interface NodeAndEdgeProps {
@@ -17,4 +13,9 @@ export interface NodeAndEdgeProps {
         compatibilityScore: number;
         reverseCompatibilityScore: number;
     }[];
+    leftCanHide: boolean;
+    rightCanHide: boolean;
+    leftDisplayScore: boolean;
+    rightDisplayScore: boolean;
+    isEditing: boolean;
 }

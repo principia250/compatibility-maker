@@ -9,11 +9,13 @@ export interface NodeProps {
     canHide: boolean;
     isVisible: boolean;
     allCompatibilityExsist: boolean;
+    side: 'left' | 'right';
+    toggleShowHide: (elementId: string, side: 'left' | 'right') => void;
 }
 
 export const nodeHeight = 60;
 
-export const Node = ({ id, score, text, displayScore, canHide, isVisible, allCompatibilityExsist }: NodeProps) => {
+export const Node = ({ id, score, text, displayScore, canHide, isVisible, allCompatibilityExsist, side, toggleShowHide }: NodeProps) => {
     return (
         <div className={clsx(
             "w-full h-[60px] flex flex-row",
@@ -54,7 +56,10 @@ export const Node = ({ id, score, text, displayScore, canHide, isVisible, allCom
                     allCompatibilityExsist ? "border-primary" : "border-[#FF0000]",
                     "w-[40px] h-full border rounded-r-lg",
                     "flex items-center justify-center",
-                )}>
+                    "cursor-pointer",
+                )}
+                    onClick={() => toggleShowHide(id, side)}
+                >
                     {isVisible ? (
                         <Eye className="w-6 h-6" />
                     ) : (
