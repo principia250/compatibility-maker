@@ -8,7 +8,18 @@ import { useRef, useEffect, useState } from 'react';
 
 const nodeGap = 20;
 
-const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplayScore, rightDisplayScore, leftCanHide, rightCanHide, isEditing }: NodeAndEdgeProps) => {
+const NodeAndEdge = ({ 
+    leftElements, 
+    rightElements, 
+    compatibilities, 
+    leftDisplayScore, 
+    rightDisplayScore, 
+    leftCanHide, 
+    rightCanHide, 
+    isEditing,
+    leftCategoryName,
+    rightCategoryName
+}: NodeAndEdgeProps) => {
     const centerRef = useRef<HTMLDivElement>(null);
     const [centerWidth, setCenterWidth] = useState(1);
     // propsを再代入
@@ -128,7 +139,6 @@ const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplay
 
     // 要素を並び替える専用の関数
     const sortElements = (
-        // elements: { isVisible: boolean; id: string; text: string; }[] | undefined, 
         leftElements: { isVisible: boolean; id: string; text: string; }[],
         rightElements: { isVisible: boolean; id: string; text: string; }[],
     ) => {
@@ -178,21 +188,6 @@ const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplay
                 return a.text.localeCompare(b.text);
             })
         }
-        // return elements?.sort((a, b) => {
-            // 第一ソート: 表示→非表示
-            // if (a.isVisible !== b.isVisible) {
-            //     return a.isVisible ? -1 : 1;
-            // }
-            // 第二ソート: スコアが高い順
-            // const scoreA = calculateScore(a.id, side);
-            // const scoreB = calculateScore(b.id, side);
-            // if (scoreA !== scoreB) {
-            //     return scoreB - scoreA; // 降順（高い順）
-            // }
-            // return 0;
-            // 第三ソート: 50音順
-            // return a.text.localeCompare(b.text);
-        // });
     };
 
     // show/hideをtoggleする関数
@@ -218,6 +213,9 @@ const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplay
             <div className="w-full flex flex-row">
                 {/* 左側 */}
                 <div className="flex w-1/3 flex-col gap-[20px]">
+                    <div className="w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
+                        {leftCategoryName}
+                    </div>
                     <div className="h-[30px] text-xs flex flex-row justify-between items-center">
                         {leftDisplayScore ? (
                             <div className="w-[50px] flex flex-col justify-center items-center">
@@ -267,7 +265,7 @@ const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplay
                                 key={arrowVariable.id}
                                 className="absolute"
                                 style={{
-                                    top: arrowVariable.y + 50,
+                                    top: arrowVariable.y + 110,
                                 }}
                             >
                                 <Arrow
@@ -282,6 +280,9 @@ const NodeAndEdge = ({ leftElements, rightElements, compatibilities, leftDisplay
 
                 {/* 右側 */}
                 <div className="flex w-1/3 flex-col gap-[20px]">
+                    <div className="w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
+                        {rightCategoryName}
+                    </div>
                     <div className="h-[30px] text-xs flex flex-row justify-between items-center">
                         {rightDisplayScore ? (
                             <div className="w-[50px] flex flex-col justify-center items-center">

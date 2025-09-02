@@ -1,6 +1,5 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
 import Loading from "@/components/loading";
@@ -188,14 +187,13 @@ export default function ChartDetailPage() {
         return <Loading />
     }
 
-    if(!isLoading && !isLoadingState && !isAuthenticated) {
-        redirect("/auth/login")
-    }
+
     return (<div className="flex flex-col gap-4">
         {/* タイトル・ユーザー */}
         <div className="flex flex-col gap-2">
             <div className="text-2xl font-bold">{data.title}</div>
             <div className="text-sm">by {data.user.username}</div>
+            <div className="text-sm text-[#ff0000]">{data.isPublic || "This chart is private."}</div>
         </div>
         {/* 図の見方 */}
         <div className="w-full flex justify-end">
@@ -225,6 +223,8 @@ export default function ChartDetailPage() {
             leftDisplayScore={true}
             rightDisplayScore={true}
             isEditing={false}
+            leftCategoryName={data.leftCategory.name}
+            rightCategoryName={data.rightCategory.name}
         />
         {/* ブックマークとグッド */}
         <div className="flex flex-row justify-end gap-4">

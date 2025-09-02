@@ -18,4 +18,6 @@ export interface NodeAndEdgeProps {
     leftDisplayScore: boolean;
     rightDisplayScore: boolean;
     isEditing: boolean;
+    leftCategoryName: string;
+    rightCategoryName: string;
 }

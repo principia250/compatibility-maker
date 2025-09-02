@@ -10,6 +10,7 @@ import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
 import { Button } from "@/components/ui/button";
 import { Pencil, CopyPlus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { CreateChart } from "@/components/dialogs/CreateChart";
 
 export default function MypagePage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
@@ -58,9 +59,11 @@ export default function MypagePage() {
                 <div className="flex flex-col gap-6">
                     {mypageData?.maxCharts && mypageData?.charts && mypageData?.maxCharts > mypageData?.charts.length
                         ?
-                        <Button variant="positive" className="w-full">
-                            Make a compatibility chart
-                        </Button>
+                        <CreateChart>
+                            <Button variant="positive" className="w-full">
+                                Make a compatibility chart
+                            </Button>
+                        </CreateChart>
                         :
                         <span className="text-[#ff0000]">
                             You have reached the maximum number of charts you can create.
@@ -69,13 +72,13 @@ export default function MypagePage() {
                     {
                         mypageData?.charts.map((chart) => (
                             <div className="flex flex-row gap-2 items-center" key={chart.id}>
+                                <Link href={`/chart/${chart.id}`} className="flex-1 line-clamp-2 overflow-hidden text-ellipsis cursor-pointer hover:text-primary">
+                                    {chart.title}
+                                </Link>
                                 <Button>Edit<Pencil className="w-4 h-4" /></Button>
                                 {mypageData?.maxCharts && mypageData?.charts && mypageData?.charts.length < mypageData?.maxCharts &&
                                     <Button>Duplicate<CopyPlus className="w-4 h-4" /></Button>
                                 }
-                                <Link href={`/chart/${chart.id}`} className="flex-1 line-clamp-2 overflow-hidden text-ellipsis cursor-pointer hover:text-primary">
-                                    {chart.title}
-                                </Link>
                                 <Button variant="destructive">Delete<Trash2 className="w-4 h-4" /></Button>
                             </div>
                         ))
