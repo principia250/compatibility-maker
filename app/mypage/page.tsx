@@ -10,7 +10,7 @@ import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
 import { Button } from "@/components/ui/button";
 import { Pencil, CopyPlus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { CreateChart } from "@/components/dialogs/CreateChart";
+import { CreateChartDialog } from "@/components/dialogs/chart/create/CreateChart";
 
 export default function MypagePage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
@@ -59,13 +59,13 @@ export default function MypagePage() {
                 <div className="flex flex-col gap-6">
                     {mypageData?.maxCharts && mypageData?.charts && mypageData?.maxCharts > mypageData?.charts.length
                         ?
-                        <CreateChart>
+                        <CreateChartDialog>
                             <Button variant="positive" className="w-full">
                                 Make a compatibility chart
                             </Button>
-                        </CreateChart>
+                        </CreateChartDialog>
                         :
-                        <span className="text-[#ff0000]">
+                        <span className="text-red-600">
                             You have reached the maximum number of charts you can create.
                         </span>
                     }

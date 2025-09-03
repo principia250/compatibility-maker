@@ -193,7 +193,7 @@ export default function ChartDetailPage() {
         <div className="flex flex-col gap-2">
             <div className="text-2xl font-bold">{data.title}</div>
             <div className="text-sm">by {data.user.username}</div>
-            <div className="text-sm text-[#ff0000]">{data.isPublic || "This chart is private."}</div>
+            <div className="text-sm">{data.isPublic || "This chart is private."}</div>
         </div>
         {/* 図の見方 */}
         <div className="w-full flex justify-end">

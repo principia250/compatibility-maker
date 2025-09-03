@@ -27,8 +27,8 @@ export interface ChartEditData {
         id: string;
         leftElementId: string;
         rightElementId: string;
-        compatibilityScore: number;
-        reverseCompatibilityScore: number;
+        compatibilityScore: number | null;
+        reverseCompatibilityScore: number | null;
     }[]
 }
 
@@ -84,6 +84,47 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
             };
         }
 
+        // スコアを計算する関数
+        const calculateScore = (elementId: string, side: 'left' | 'right') => {
+            const compatibilities = chartData.compatibilities;
+            if (side === 'left') {
+                // compatibilitiesからleftElementIdがelementIdのものを取得
+                const leftCompatibility = compatibilities?.filter((compatibility) => {
+                    return compatibility.left_element_id === elementId;
+                });
+                // 抽出したcompatibilitiesのcompatibilityScoreを合計
+                const sum = leftCompatibility?.reduce((acc, compatibility) => acc + compatibility.compatibility_scores.score, 0)
+                // 合計をlengthで割る
+                return (sum === undefined || leftCompatibility === undefined || leftCompatibility?.length === 0) ? 0 : sum / (leftCompatibility?.length || 0)
+            } else {
+                // 右側の場合はreverseCompatibilityScoreを使用
+                const rightCompatibility = compatibilities?.filter((compatibility) => {
+                    return compatibility.right_element_id === elementId;
+                });
+                const sum = rightCompatibility?.reduce((acc, compatibility) => acc + compatibility.reverse_compatibility_scores.score, 0)
+                return (sum === undefined || rightCompatibility === undefined || rightCompatibility?.length === 0) ? 0 : sum / (rightCompatibility?.length || 0)
+            }
+        }
+
+        // 一時的にleftCategoryとrightCategoryのelementsを代入
+        let leftElements = chartData.left_categories[0]?.elements.map((element: any) => ({
+            id: element.id,
+            name: element.name,
+            score: calculateScore(element.id, 'left')
+        }));
+        let rightElements = chartData.right_categories[0]?.elements.map((element: any) => ({
+            id: element.id,
+            name: element.name,
+            score: calculateScore(element.id, 'right')
+        }));
+
+        // ソート
+        // 第一ソート: スコアが高い順
+        // 第二ソート: 50音順
+        leftElements = leftElements?.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+        rightElements = rightElements?.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+
+
         return {
             data: {
                 id: chartData.id,
@@ -92,7 +133,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                 leftCategory: {
                     id: chartData.left_categories[0]?.id || '',
                     name: chartData.left_categories[0]?.name || '',
-                    elements: chartData.left_categories[0]?.elements.map((element: any) => ({
+                    elements: leftElements.map((element: any) => ({
                         id: element.id,
                         name: element.name
                     })) || []
@@ -100,7 +141,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                 rightCategory: {
                     id: chartData.right_categories[0]?.id || '',
                     name: chartData.right_categories[0]?.name || '',
-                    elements: chartData.right_categories[0]?.elements.map((element: any) => ({
+                    elements: rightElements.map((element: any) => ({
                         id: element.id,
                         name: element.name
                     })) || []

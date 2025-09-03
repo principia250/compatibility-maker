@@ -5,6 +5,13 @@ import { Node, nodeHeight } from './Node';
 import { Arrow } from './Arrow';
 import { COMPABILITY_COLOR } from '@/constants/compability-color';
 import { useRef, useEffect, useState } from 'react';
+import { Label } from '@radix-ui/react-label';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { Plus } from 'lucide-react';
+import { AddNodeDialog } from '@/components/dialogs/chart/edit/AddNode';
+import { EditCompatibilityDialog } from '@/components/dialogs/chart/edit/EditCompatibility';
+import { EditRightNodeDialog } from '@/components/dialogs/chart/edit/EditRightNode';
 
 const nodeGap = 20;
 
@@ -16,9 +23,14 @@ const NodeAndEdge = ({
     rightDisplayScore, 
     leftCanHide, 
     rightCanHide, 
-    isEditing,
     leftCategoryName,
-    rightCategoryName
+    rightCategoryName,
+    isEditing,
+    handleCategoryNameChange,
+    handleAddNode,
+    handleCompatibilitySave,
+    handleNodeNameChange,
+    handleDeleteNode,
 }: NodeAndEdgeProps) => {
     const centerRef = useRef<HTMLDivElement>(null);
     const [centerWidth, setCenterWidth] = useState(1);
@@ -35,6 +47,31 @@ const NodeAndEdge = ({
             isVisible: true,
         }))
     );
+    
+    // 相性編集ダイアログの状態
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedLeftNode, setSelectedLeftNode] = useState<{id: string, name: string} | null>(null);
+
+    // 右側ノード編集ダイアログ
+    const [editRightDialogOpen, setEditRightDialogOpen] = useState(false);
+    const [selectedRightNode, setSelectedRightNode] = useState<{id: string, name: string} | null>(null);
+
+    // 外部からの要素変更（追加・削除・名称変更など）をローカル状態へ反映し、並び替えも適用
+    useEffect(() => {
+        const mappedLeft = leftElements?.map((element) => ({
+            ...element,
+            isVisible: leftElementsLocal?.find((e) => e.id === element.id)?.isVisible ?? true,
+        })) ?? [];
+        const mappedRight = rightElements?.map((element) => ({
+            ...element,
+            isVisible: rightElementsLocal?.find((e) => e.id === element.id)?.isVisible ?? true,
+        })) ?? [];
+
+        const { leftElements: sortedLeft, rightElements: sortedRight } = sortElements(mappedLeft, mappedRight);
+        setLeftElementsLocal([...sortedLeft]);
+        setRightElementsLocal([...sortedRight]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [leftElements, rightElements]);
     
     // スコアを計算する関数
     const calculateScore = (
@@ -54,7 +91,7 @@ const NodeAndEdge = ({
                 return compatibility.leftElementId === elementId && rightElement?.isVisible;
             });
             // 抽出したcompatibilitiesのcompatibilityScoreを合計
-            const sum = leftCompatibility?.reduce((acc, compatibility) => acc + compatibility.compatibilityScore, 0)
+            const sum = leftCompatibility?.reduce((acc, compatibility) => acc + (compatibility.compatibilityScore ?? 0), 0)
             // 合計をlengthで割る
             return (sum === undefined || leftCompatibility === undefined || leftCompatibility?.length === 0) ? 0 : sum / (leftCompatibility?.length || 0)
         } else {
@@ -68,7 +105,7 @@ const NodeAndEdge = ({
                 const leftElement = leftElements?.find(element => element.id === compatibility.leftElementId);
                 return compatibility.rightElementId === elementId && leftElement?.isVisible;
             });
-            const sum = rightCompatibility?.reduce((acc, compatibility) => acc + compatibility.reverseCompatibilityScore, 0)
+            const sum = rightCompatibility?.reduce((acc, compatibility) => acc + (compatibility.reverseCompatibilityScore ?? 0), 0)
             return (sum === undefined || rightCompatibility === undefined || rightCompatibility?.length === 0) ? 0 : sum / (rightCompatibility?.length || 0)
         }
     }
@@ -110,7 +147,7 @@ const NodeAndEdge = ({
             id: compatibility.id,
             length: Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)),
             angle: -Math.atan2(height, width) * 180 / Math.PI,
-            color: COMPABILITY_COLOR[compatibility.compatibilityScore.toString() as keyof typeof COMPABILITY_COLOR],
+            color: COMPABILITY_COLOR[(compatibility.compatibilityScore ?? 0).toString() as keyof typeof COMPABILITY_COLOR],
             y: nodeHeight / 2 + (nodeHeight + nodeGap) * leftIndex - height / 2,
         }
     })
@@ -122,7 +159,10 @@ const NodeAndEdge = ({
             // compatibilitiesからleftElementIdがelementIdのものを取得
             const leftCompatibility = compatibilities?.filter((compatibility) => compatibility.leftElementId === elementId)
             // 抽出したcompatibilitiesが右側のノードを網羅しているか確認
-            return rightElementsLocal!.every((rightElement) => leftCompatibility?.some((compatibility) => compatibility.rightElementId === rightElement.id))
+            return rightElementsLocal!.every((rightElement) => 
+                leftCompatibility?.some((compatibility) => 
+                    compatibility.rightElementId === rightElement.id
+            ))
         } else {
             // 右側のノードの場合
             // compatibilitiesからrightElementIdがelementIdのものを取得
@@ -134,7 +174,9 @@ const NodeAndEdge = ({
 
     // 一つでも互換性がない場合はfalseを返す関数
     const checkOneCompatibility = () => {
-        return leftElementsLocal?.some((leftElement) => checkAllCompatibility(leftElement.id, 'left'))
+        return leftElementsLocal?.every((leftElement) => 
+            checkAllCompatibility(leftElement.id, 'left'
+        ))
     }
 
     // 要素を並び替える専用の関数
@@ -208,14 +250,36 @@ const NodeAndEdge = ({
         setRightElementsLocal(sortedRightElements)
     }
 
+    // 左側ノードクリック時の処理
+    const handleLeftNodeClick = (elementId: string, elementName: string) => {
+        if (isEditing) {
+            setSelectedLeftNode({ id: elementId, name: elementName });
+            setEditDialogOpen(true);
+        }
+    };
+
+
+
     return (
         <>
             <div className="w-full flex flex-row">
                 {/* 左側 */}
                 <div className="flex w-1/3 flex-col gap-[20px]">
-                    <div className="w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
-                        {leftCategoryName}
-                    </div>
+                    {/* カテゴリ名 */}
+                    {isEditing 
+                        ? (
+                            <div className="h-[60px]">
+                                <Label htmlFor="left-category-name" className="text-primary">Name on this side</Label>
+                                <Input id="left-category-name" value={leftCategoryName} onChange={(e) => handleCategoryNameChange?.('left', e.target.value)} />
+                            </div>
+                        )
+                        : (
+                            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
+                                {leftCategoryName}
+                            </div>
+                        )
+                    }
+                    {/* ヘッダー */}
                     <div className="h-[30px] text-xs flex flex-row justify-between items-center">
                         {leftDisplayScore ? (
                             <div className="w-[50px] flex flex-col justify-center items-center">
@@ -234,6 +298,23 @@ const NodeAndEdge = ({
                             <div className="w-[40px]"></div>
                         )}
                     </div>
+                    {/* ノード追加ボタン */}
+                    {isEditing && (
+                        <AddNodeDialog
+                            leftSideName={leftCategoryName}
+                            rightSideName={rightCategoryName}
+                            defaultSide="left"
+                            handleAddNode={handleAddNode || (() => {})}
+                        >
+                            <Button
+                                variant="positive"
+                            >
+                                <Plus className="size-4" />
+                                Add item
+                            </Button>
+                        </AddNodeDialog>
+                    )}
+                    {/* ノード */}
                     {leftElementsLocal?.map((element) => (
                         <Node 
                             key={element.id} 
@@ -250,6 +331,7 @@ const NodeAndEdge = ({
                             allCompatibilityExsist={checkAllCompatibility(element.id, 'left') || !isEditing} 
                             side="left"
                             toggleShowHide={toggleShowHide}
+                            onClick={isEditing ? () => handleLeftNodeClick(element.id, element.text) : undefined}
                         />
                     ))}
                 </div>
@@ -265,7 +347,7 @@ const NodeAndEdge = ({
                                 key={arrowVariable.id}
                                 className="absolute"
                                 style={{
-                                    top: arrowVariable.y + 110,
+                                    top: arrowVariable.y + (isEditing ? 190 : 130),
                                 }}
                             >
                                 <Arrow
@@ -280,9 +362,21 @@ const NodeAndEdge = ({
 
                 {/* 右側 */}
                 <div className="flex w-1/3 flex-col gap-[20px]">
-                    <div className="w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
-                        {rightCategoryName}
-                    </div>
+                    {/* カテゴリ名 */}
+                    {isEditing 
+                        ? (
+                            <div className="h-[60px]">
+                                <Label htmlFor="right-category-name" className="text-primary">Name on this side</Label>
+                                <Input id="right-category-name" value={rightCategoryName} onChange={(e) => handleCategoryNameChange?.('right', e.target.value)} />
+                            </div>
+                        )
+                        : (
+                            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
+                                {rightCategoryName}
+                            </div>
+                        )
+                    }
+                    {/* ヘッダー */}
                     <div className="h-[30px] text-xs flex flex-row justify-between items-center">
                         {rightDisplayScore ? (
                             <div className="w-[50px] flex flex-col justify-center items-center">
@@ -301,6 +395,23 @@ const NodeAndEdge = ({
                             <div className="w-[40px]"></div>
                         )}
                     </div>
+                    {/* ノード追加ボタン */}
+                    {isEditing && (
+                        <AddNodeDialog
+                            leftSideName={leftCategoryName}
+                            rightSideName={rightCategoryName}
+                            defaultSide="right"
+                            handleAddNode={handleAddNode || (() => {})}
+                        >
+                            <Button
+                                variant="positive"
+                            >
+                                <Plus className="size-4" />
+                                Add item
+                            </Button>
+                        </AddNodeDialog>
+                    )}
+                    {/* ノード */}
                     {rightElementsLocal?.map((element) => (
                         <Node 
                             key={element.id} 
@@ -317,12 +428,61 @@ const NodeAndEdge = ({
                             allCompatibilityExsist={checkAllCompatibility(element.id, 'right') || !isEditing} 
                             side="right"
                             toggleShowHide={toggleShowHide}
+                            onClick={isEditing ? () => { setSelectedRightNode({ id: element.id, name: element.text }); setEditRightDialogOpen(true); } : undefined}
                         />
                     ))}
                 </div>
             </div>
             {(checkOneCompatibility() || !isEditing) || (
-                <div className="text-[#ff0000]">There are nodes for which all compatibility settings have not been configured.</div>
+                <div className="text-red-600">There are nodes for which all compatibility settings have not been configured.</div>
+            )}
+            
+            {/* 相性編集ダイアログ */}
+            {selectedLeftNode && (
+                <EditCompatibilityDialog
+                    open={editDialogOpen}
+                    onOpenChange={setEditDialogOpen}
+                    leftNodeName={selectedLeftNode.name}
+                    leftCategoryName={leftCategoryName}
+                    rightCategoryName={rightCategoryName}
+                    rightNodes={rightElementsLocal?.map(el => ({ id: el.id, name: el.text })) ?? []}
+                    compatibilities={compatibilities?.filter(c => c.leftElementId === selectedLeftNode.id) ?? []}
+                    onSave={(compatibilities) => {
+                        if (handleCompatibilitySave && selectedLeftNode) {
+                            handleCompatibilitySave(selectedLeftNode.id, compatibilities);
+                        }
+                    }}
+                    onLeftNodeNameChange={(newName) => {
+                        if (handleNodeNameChange && selectedLeftNode) {
+                            handleNodeNameChange(selectedLeftNode.id, newName, "left");
+                        }
+                    }}
+                    onDelete={() => {
+                        if (handleDeleteNode && selectedLeftNode) {
+                            handleDeleteNode(selectedLeftNode.id, "left");
+                        }
+                    }}
+                />
+            )}
+
+            {/* 右側ノード編集ダイアログ */}
+            {selectedRightNode && (
+                <EditRightNodeDialog
+                    open={editRightDialogOpen}
+                    onOpenChange={setEditRightDialogOpen}
+                    rightCategoryName={rightCategoryName}
+                    initialNodeName={selectedRightNode.name}
+                    onRename={(newName) => {
+                        if (handleNodeNameChange && selectedRightNode) {
+                            handleNodeNameChange(selectedRightNode.id, newName, 'right');
+                        }
+                    }}
+                    onDelete={() => {
+                        if (handleDeleteNode && selectedRightNode) {
+                            handleDeleteNode(selectedRightNode.id, 'right');
+                        }
+                    }}
+                />
             )}
         </>
     )

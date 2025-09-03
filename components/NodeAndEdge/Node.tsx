@@ -11,11 +11,23 @@ export interface NodeProps {
     allCompatibilityExsist: boolean;
     side: 'left' | 'right';
     toggleShowHide: (elementId: string, side: 'left' | 'right') => void;
+    onClick?: () => void;
 }
 
 export const nodeHeight = 60;
 
-export const Node = ({ id, score, text, displayScore, canHide, isVisible, allCompatibilityExsist, side, toggleShowHide }: NodeProps) => {
+export const Node = ({ 
+    id, 
+    score, 
+    text, 
+    displayScore, 
+    canHide, 
+    isVisible, 
+    allCompatibilityExsist, 
+    side, 
+    toggleShowHide, 
+    onClick 
+}: NodeProps) => {
     return (
         <div className={clsx(
             "w-full h-[60px] flex flex-row",
@@ -41,7 +53,10 @@ export const Node = ({ id, score, text, displayScore, canHide, isVisible, allCom
                 "flex-1 p-2 flex items-center",
                 !displayScore && "border-l rounded-l-lg",
                 !canHide && "border-r rounded-r-lg",
-            )}>
+                onClick && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10",
+            )}
+                onClick={onClick}
+            >
                 <div className={clsx(
                     "line-clamp-2 overflow-hidden text-ellipsis",
                 )}>

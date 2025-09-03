@@ -15,7 +15,7 @@ interface CreateChartProps {
   children: React.ReactNode;
 }
 
-export function CreateChart({ children }: CreateChartProps) {
+export function CreateChartDialog({ children }: CreateChartProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [isPublic, setIsPublic] = useState(true);
@@ -106,15 +106,15 @@ export function CreateChart({ children }: CreateChartProps) {
           </div>
 
           {/* ボタン */}
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={handleCancel} disabled={isCreating}>
-              Cancel
-            </Button>
+          <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
             <Button 
               onClick={handleCreate} 
               disabled={!title.trim() || isCreating}
             >
               {isCreating ? 'Creating...' : 'Create Chart'}
+            </Button>
+            <Button variant="outline" onClick={handleCancel} disabled={isCreating}>
+              Cancel
             </Button>
           </div>
         </div>

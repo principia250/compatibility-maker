@@ -10,14 +10,24 @@ export interface NodeAndEdgeProps {
         id: string;
         leftElementId: string;
         rightElementId: string;
-        compatibilityScore: number;
-        reverseCompatibilityScore: number;
+        compatibilityScore: number | null;
+        reverseCompatibilityScore: number | null;
     }[];
     leftCanHide: boolean;
     rightCanHide: boolean;
     leftDisplayScore: boolean;
     rightDisplayScore: boolean;
-    isEditing: boolean;
     leftCategoryName: string;
     rightCategoryName: string;
+    // 編集系
+    isEditing: boolean;
+    handleCategoryNameChange?: (side: "left" | "right", name: string) => void;
+    handleAddNode?: (side: "left" | "right", name: string) => void;
+    handleCompatibilitySave?: (leftElementId: string, compatibilities: Array<{
+        rightElementId: string;
+        compatibilityScore: number | null;
+        reverseCompatibilityScore: number | null;
+    }>) => void;
+    handleNodeNameChange?: (elementId: string, newName: string, side: "left" | "right") => void;
+    handleDeleteNode?: (elementId: string, side: "left" | "right") => void;
 }
