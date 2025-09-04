@@ -6,7 +6,7 @@ import Loading from "@/components/loading";
 import { useParams } from "next/navigation";
 import { fetchChartDetailData, ChartDetailData } from "@/actions/composed/chart-detail/fetch";
 import { addComment, toggleBookmark, toggleGood } from "@/actions/composed/chart-detail/mutation";
-import Link from "next/link";
+import CustomLink from "@/components/CustomLink";
 import { ExplanatoryNote } from "@/components/NodeAndEdge/ExplanatoryNote";
 import NodeAndEdge from "@/components/NodeAndEdge";
 import { Input } from "@/components/ui/input";
@@ -197,9 +197,9 @@ export default function ChartDetailPage() {
         </div>
         {/* 図の見方 */}
         <div className="w-full flex justify-end">
-            <Link href="/how-to-use" className="hover:text-primary">
+            <CustomLink href="/how-to-use">
                 How to read this chart?
-            </Link>
+            </CustomLink>
         </div>
         {/* 凡例 */}
         <ExplanatoryNote />
@@ -279,9 +279,9 @@ export default function ChartDetailPage() {
             ))}
             {/* コメントページへのリンク */}
             <div className="flex justify-end">
-                <Link href={`/chart/${chartId}/comments`} className="text-white hover:text-primary">
+                <CustomLink href={`/chart/${chartId}/comments`}>
                     Comments Page →
-                </Link>
+                </CustomLink>
             </div>
         </div>
     </div>)

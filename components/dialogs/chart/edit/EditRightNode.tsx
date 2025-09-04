@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,17 +60,19 @@ export const EditRightNodeDialog = ({
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
-                    <Button onClick={handleRename} disabled={!name.trim()}>
-                        Rename
-                    </Button>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="destructive" onClick={handleDelete}>
-                        Delete
-                    </Button>
-                </div>
+                <DialogFooter>
+                    <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
+                        <Button onClick={handleRename} disabled={!name.trim()}>
+                            Rename
+                        </Button>
+                        <Button variant="outline" onClick={() => onOpenChange(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete}>
+                            Delete
+                        </Button>
+                    </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

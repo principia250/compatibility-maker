@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogFooter
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +18,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
 import { COMPABILITY_NOTATION } from "@/constants/compability-notation";
 
 interface CompatibilityOption {
@@ -167,25 +172,26 @@ export const EditCompatibilityDialog = ({
                         </div>
                     </div>
                 </div>
-
-                {/* Action buttons */}
-                <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
-                    <Button
-                        onClick={handleSave}
-                        disabled={!localLeftNodeName.trim()}
-                    >
-                        Confirm
-                    </Button>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        Close
-                    </Button>
-                    <Button 
-                        variant="destructive" 
-                        onClick={handleDelete}
-                    >
-                        Delete item
-                    </Button>
-                </div>
+                <DialogFooter>
+                    {/* Action buttons */}
+                    <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
+                        <Button
+                            onClick={handleSave}
+                            disabled={!localLeftNodeName.trim()}
+                        >
+                            Confirm
+                        </Button>
+                        <Button variant="outline" onClick={() => onOpenChange(false)}>
+                            Close
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            onClick={handleDelete}
+                        >
+                            Delete item
+                        </Button>
+                    </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

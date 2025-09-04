@@ -26,8 +26,8 @@ const buttonVariants = cva(
         link: "text-primary hover:text-primary/80",
       },
       size: {
-        default: "h-10 px-4",
-        sm: "h-8 px-3",
+        default: "h-10 px-4 text-sm sm:text-base",
+        sm: "h-8 px-3 text-sm sm:text-base",
         xs: "h-4 px-2 text-sm"
       },
     },

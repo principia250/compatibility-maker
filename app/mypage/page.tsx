@@ -7,10 +7,14 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
 import Loading from "@/components/loading";
 import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
+import { duplicateChart, deleteChart } from "@/actions/composed/mypage/mutation";
 import { Button } from "@/components/ui/button";
 import { Pencil, CopyPlus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { CreateChartDialog } from "@/components/dialogs/chart/create/CreateChart";
+import { DeleteChartDialog } from "@/components/dialogs/chart/delete/DeleteChartDialog";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function MypagePage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
@@ -18,6 +22,11 @@ export default function MypagePage() {
   const tab = searchParams.get("tab") || "myChart";
   const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
   const [mypageData, setMypageData] = useState<MypageData | null>(null)
+  const [isDuplicating, setIsDuplicating] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [chartToDelete, setChartToDelete] = useState<{ id: string; title: string } | null>(null)
+  const router = useRouter();
 
   useEffect(() => {
     if(isLoading || user) {
@@ -37,6 +46,58 @@ export default function MypagePage() {
     }
     fetch()
   },[user])
+
+  const handleDuplicate = async (chartId: string) => {
+    setIsDuplicating(chartId);
+    try {
+      const result = await duplicateChart({ chartId }) as any;
+      if (result.error) {
+        alert('Duplication failed: ' + result.error.message);
+        return;
+      }
+      
+      if (result.data?.newChartId) {
+        // 複製成功時は編集画面に遷移
+        router.push(`/chart/${result.data.newChartId}/edit`);
+      }
+    } catch (error) {
+      alert('Duplication failed');
+    } finally {
+      setIsDuplicating(null);
+    }
+  };
+
+  const handleDeleteClick = (chartId: string, chartTitle: string) => {
+    setChartToDelete({ id: chartId, title: chartTitle });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!chartToDelete || !user) return;
+    
+    setIsDeleting(chartToDelete.id);
+    try {
+      const result = await deleteChart({ chartId: chartToDelete.id }) as any;
+      if (result.error) {
+        alert('Delete failed: ' + result.error.message);
+        return;
+      }
+      
+      // 削除成功時はデータを再取得
+      const mypageData = await fetchMypageData({ userId: user.id });
+      if (mypageData.error) {
+        throw mypageData.error;
+      }
+      setMypageData(mypageData.data);
+      
+      setDeleteDialogOpen(false);
+      setChartToDelete(null);
+    } catch (error) {
+      alert('Delete failed');
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   if(isLoading || isLoadingState || !mypageData) {
     return <Loading />
@@ -61,6 +122,7 @@ export default function MypagePage() {
                         ?
                         <CreateChartDialog>
                             <Button variant="positive" className="w-full">
+                                <Plus className="w-4 h-4" />
                                 Make a compatibility chart
                             </Button>
                         </CreateChartDialog>
@@ -75,11 +137,29 @@ export default function MypagePage() {
                                 <Link href={`/chart/${chart.id}`} className="flex-1 line-clamp-2 overflow-hidden text-ellipsis cursor-pointer hover:text-primary">
                                     {chart.title}
                                 </Link>
-                                <Button>Edit<Pencil className="w-4 h-4" /></Button>
+                                <Button asChild>
+                                    <Link href={`/chart/${chart.id}/edit`}>
+                                        <Pencil className="w-4 h-4" />
+                                        Edit
+                                    </Link>
+                                </Button>
                                 {mypageData?.maxCharts && mypageData?.charts && mypageData?.charts.length < mypageData?.maxCharts &&
-                                    <Button>Duplicate<CopyPlus className="w-4 h-4" /></Button>
+                                    <Button 
+                                        onClick={() => handleDuplicate(chart.id)}
+                                        disabled={isDuplicating === chart.id}
+                                    >
+                                        <CopyPlus className="w-4 h-4" />
+                                        {isDuplicating === chart.id ? 'Duplicating...' : 'Duplicate'}
+                                    </Button>
                                 }
-                                <Button variant="destructive">Delete<Trash2 className="w-4 h-4" /></Button>
+                                <Button 
+                                  variant="destructive"
+                                  onClick={() => handleDeleteClick(chart.id, chart.title)}
+                                  disabled={isDeleting === chart.id}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  {isDeleting === chart.id ? 'Deleting...' : 'Delete'}
+                                </Button>
                             </div>
                         ))
                     }
@@ -103,6 +183,14 @@ export default function MypagePage() {
                 </div>
             </TabsContent>
         </Tabs>
+        
+        <DeleteChartDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          chartTitle={chartToDelete?.title || ''}
+          onConfirm={handleDeleteConfirm}
+          isDeleting={isDeleting === chartToDelete?.id}
+        />
     </>
   );
 }

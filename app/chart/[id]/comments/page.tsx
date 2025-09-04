@@ -6,7 +6,7 @@ import { useUser } from "@/hooks/use-user";
 import Loading from "@/components/loading";
 import { useParams } from "next/navigation";
 import { fetchChartComments, ChartCommentsData } from "@/actions/composed/chart-detail/comments/fetch";
-import Link from "next/link";
+import CustomLink from "@/components/CustomLink";
 import { ArrowLeft } from "lucide-react";
 import { CommentCard } from "@/components/ui/comment-card";
 
@@ -51,13 +51,13 @@ export default function ChartCommentsPage() {
             <div className="flex flex-col gap-4">
                 {/* 戻るリンク */}
                 <div className="flex items-center gap-2">
-                    <Link 
+                    <CustomLink 
                         href={`/chart/${chartId}`}
-                        className="flex items-center gap-2 text-white hover:text-primary transition-colors"
+                        className="flex items-center gap-2"
                     >
                         <ArrowLeft className="w-5 h-5" />
                         Back to Chart
-                    </Link>
+                    </CustomLink>
                 </div>
                 
                 {/* チャート情報 */}

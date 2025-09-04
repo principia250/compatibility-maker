@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,7 +104,9 @@ export function CreateChartDialog({ children }: CreateChartProps) {
               </div>
             </RadioGroup>
           </div>
+        </div>
 
+        <DialogFooter>
           {/* ボタン */}
           <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
             <Button 
@@ -117,7 +119,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
               Cancel
             </Button>
           </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

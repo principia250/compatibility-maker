@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,24 +65,25 @@ export const AddNodeDialog = ({
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-
-                {/* ボタン */}
-                <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
-                    <Button 
-                        onClick={() => {
-                            handleAddNode(side, name);
-                            setOpen(false);
-                            setName("");
-                            setSide(defaultSide);
-                        }} 
-                        disabled={!name.trim()}
-                    >
-                        Add item
-                    </Button>
-                    <Button variant="outline" onClick={() => { setOpen(false); setName(""); }}>
-                        Cancel
-                    </Button>
-                </div>
+                <DialogFooter>
+                    {/* ボタン */}
+                    <div className="flex flex-col sm:flex-row-reverse justify-center sm:justify-start gap-3">
+                        <Button 
+                            onClick={() => {
+                                handleAddNode(side, name);
+                                setOpen(false);
+                                setName("");
+                                setSide(defaultSide);
+                            }} 
+                            disabled={!name.trim()}
+                        >
+                            Add item
+                        </Button>
+                        <Button variant="outline" onClick={() => { setOpen(false); setName(""); }}>
+                            Cancel
+                        </Button>
+                    </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

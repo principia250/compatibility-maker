@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import CustomLink from "@/components/CustomLink";
 import { useState } from "react";
 
 export function ForgotPasswordForm({
@@ -89,12 +89,12 @@ export function ForgotPasswordForm({
               </div>
               <div className="mt-4 text-center text-sm">
                 Already have an account?{" "}
-                <Link
+                <CustomLink
                   href="/auth/login"
                   className="underline underline-offset-4"
                 >
                   Login
-                </Link>
+                </CustomLink>
               </div>
             </form>
           </CardContent>

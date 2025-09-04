@@ -1,10 +1,10 @@
 'use client';
 
 import { NodeAndEdgeProps } from './type';
-import { Node, nodeHeight } from './Node';
+import { Node, nodeHeight, nodeHeightSm } from './Node';
 import { Arrow } from './Arrow';
 import { COMPABILITY_COLOR } from '@/constants/compability-color';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -33,7 +33,9 @@ const NodeAndEdge = ({
     handleDeleteNode,
 }: NodeAndEdgeProps) => {
     const centerRef = useRef<HTMLDivElement>(null);
+    const centerRefSm = useRef<HTMLDivElement>(null);
     const [centerWidth, setCenterWidth] = useState(1);
+    const [centerWidthSm, setCenterWidthSm] = useState(1);
     // propsを再代入
     const [leftElementsLocal, setLeftElementsLocal] = useState(
         leftElements?.map((element) => ({
@@ -115,6 +117,8 @@ const NodeAndEdge = ({
             const updateWidth = () => {
                 const width = centerRef.current?.offsetWidth || 1;
                 setCenterWidth(width);
+                const widthSm = centerRefSm.current?.offsetWidth || 1;
+                setCenterWidthSm(widthSm);
             };
             
             updateWidth();
@@ -122,6 +126,18 @@ const NodeAndEdge = ({
             
             return () => window.removeEventListener('resize', updateWidth);
         }
+    }, []);
+
+    const [screenWidth, setScreenWidth] = useState(0);
+    useLayoutEffect(() => {
+        const updateScreenWidth = (): void => {
+        setScreenWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateScreenWidth);
+        updateScreenWidth();
+
+        return () => window.removeEventListener('resize', updateScreenWidth);
     }, []);
 
     const arrowVariables = compatibilities?.map((compatibility) => {
@@ -142,13 +158,18 @@ const NodeAndEdge = ({
         
         // ノードの高さの差を計算
         const height = (leftIndex - rightIndex) * (nodeHeight + nodeGap)
+        const heightSm = (leftIndex - rightIndex) * (nodeHeightSm + nodeGap)
         const width = centerWidth
+        const widthSm = centerWidthSm
         return {
             id: compatibility.id,
             length: Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)),
+            lengthSm: Math.sqrt(Math.pow(widthSm, 2) + Math.pow(heightSm, 2)),
             angle: -Math.atan2(height, width) * 180 / Math.PI,
+            angleSm: -Math.atan2(heightSm, widthSm) * 180 / Math.PI,
             color: COMPABILITY_COLOR[(compatibility.compatibilityScore ?? 0).toString() as keyof typeof COMPABILITY_COLOR],
             y: nodeHeight / 2 + (nodeHeight + nodeGap) * leftIndex - height / 2,
+            ySm: nodeHeightSm / 2 + (nodeHeightSm + nodeGap) * leftIndex - heightSm / 2,
         }
     })
 
@@ -264,7 +285,7 @@ const NodeAndEdge = ({
         <>
             <div className="w-full flex flex-row">
                 {/* 左側 */}
-                <div className="flex w-1/3 flex-col gap-[20px]">
+                <div className="flex w-[42%] sm:w-1/3 flex-col gap-[20px]">
                     {/* カテゴリ名 */}
                     {isEditing 
                         ? (
@@ -337,15 +358,37 @@ const NodeAndEdge = ({
                 </div>
 
                 {/* 中央 */}
-                <div ref={centerRef} className="w-1/3 flex justify-center relative">
+                <div ref={centerRefSm} className="w-[16%] sm:w-1/3 flex justify-center relative hidden sm:flex">
                     {arrowVariables?.map((arrowVariable) => {
                         if (arrowVariable === null) {
                             return null;
                         }
                         return (
                             <div
-                                key={arrowVariable.id}
                                 className="absolute"
+                                key={arrowVariable.id}
+                                style={{
+                                    top: arrowVariable.ySm + (isEditing ? 190 : 130),
+                                }}
+                            >
+                                <Arrow
+                                    length={arrowVariable.lengthSm}
+                                    angle={arrowVariable.angleSm}
+                                    color={arrowVariable.color}
+                                />
+                            </div>
+                        )
+                    })}
+                </div>
+                <div ref={centerRef} className="w-[16%] sm:w-1/3 flex justify-center relative sm:hidden">
+                    {arrowVariables?.map((arrowVariable) => {
+                        if (arrowVariable === null) {
+                            return null;
+                        }
+                        return (
+                            <div
+                                className="absolute"
+                                key={arrowVariable.id}
                                 style={{
                                     top: arrowVariable.y + (isEditing ? 190 : 130),
                                 }}
@@ -361,7 +404,7 @@ const NodeAndEdge = ({
                 </div>
 
                 {/* 右側 */}
-                <div className="flex w-1/3 flex-col gap-[20px]">
+                <div className="flex w-[42%] sm:w-1/3 flex-col gap-[20px]">
                     {/* カテゴリ名 */}
                     {isEditing 
                         ? (

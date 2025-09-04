@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import CustomLink from "@/components/CustomLink";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -73,12 +73,12 @@ export function LoginForm({
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <Link
+                  <CustomLink
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm underline-offset-4"
                   >
                     Forgot your password?
-                  </Link>
+                  </CustomLink>
                 </div>
                 <Input
                   id="password"
@@ -95,12 +95,12 @@ export function LoginForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <Link
+              <CustomLink
                 href="/auth/sign-up"
                 className="underline underline-offset-4"
               >
                 Sign up
-              </Link>
+              </CustomLink>
             </div>
           </form>
         </CardContent>

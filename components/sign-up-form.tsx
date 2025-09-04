@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import CustomLink from "@/components/CustomLink";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -123,9 +123,9 @@ export function SignUpForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
-                Login
-              </Link>
+              <CustomLink href="/auth/login" className="underline underline-offset-4">
+                  Login
+              </CustomLink>
             </div>
           </form>
         </CardContent>

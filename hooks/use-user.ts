@@ -20,6 +20,7 @@ export const useUser = () => {
     fetchUser: store.fetchUser,
     logout: store.logout,
     clearUser: store.clearUser,
+    updateUsername: store.updateUsername,
     
     // 詳細情報
     username: store.user?.username || '',
