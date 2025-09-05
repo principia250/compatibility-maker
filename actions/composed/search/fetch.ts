@@ -45,7 +45,8 @@ export const searchCharts = async (params: SearchParams): Promise<Response<Searc
                 title,
                 updated_at,
                 created_at,
-                users!compatibility_charts_user_id_fkey (
+                user_id,
+                users!inner (
                     id,
                     username
                 ),
@@ -82,8 +83,9 @@ export const searchCharts = async (params: SearchParams): Promise<Response<Searc
 
         if (chartsError) {
             console.error('Search charts error:', chartsError);
-            return { data: null, error: { message: '検索に失敗しました' } };
+            return { data: null, error: { message: 'Failed to search charts' } };
         }
+
 
         if (!charts) {
             return {
@@ -134,6 +136,6 @@ export const searchCharts = async (params: SearchParams): Promise<Response<Searc
 
     } catch (error) {
         console.error('Search charts error:', error);
-        return { data: null, error: { message: '予期しないエラーが発生しました' } };
+        return { data: null, error: { message: 'An unexpected error occurred' } };
     }
 };

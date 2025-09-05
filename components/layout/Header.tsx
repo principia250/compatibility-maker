@@ -242,74 +242,26 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
         {/* モバイルメニュー */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border py-4">
+          <div className="md:hidden border-t border-white py-4">
             <nav className="flex flex-col space-y-3">
               <Link 
-                href="/charts" 
-                className="text-foreground hover:text-primary transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                相性図一覧
-              </Link>
-              <Link 
                 href="/search" 
-                className="text-foreground hover:text-primary transition-colors px-2 py-1"
+                className="hover:text-primary flex items-center px-2 py-1"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
+                <Search className="w-4 h-4 mr-2" />
                 Search
               </Link>
               <Link 
-                href="/demo" 
-                className="text-foreground hover:text-primary transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                デモ
-              </Link>
-              <Link 
                 href={isAuthenticated ? "/mypage" : "/auth/sign-in"}
-                className="text-foreground hover:text-primary transition-colors px-2 py-1"
+                className="hover:text-primary flex items-center px-2 py-1"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
+                <Pencil className="w-4 h-4 mr-2" />
                 Create
               </Link>
-              {/* モバイル言語選択 */}
-              <div className="px-2 py-1">
-                <div className="relative language-dropdown">
-                  <button
-                    onClick={toggleLanguageDropdown}
-                    className="flex items-center justify-between w-full px-3 py-2 text-sm border border-border rounded-md bg-background hover:bg-accent transition-colors"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Globe className="w-4 h-4" />
-                      <span>{getLanguageLabel(language)}</span>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {isLanguageDropdownOpen && (
-                    <div className="absolute left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50">
-                      <button
-                        onClick={() => handleLanguageChange('ja')}
-                        className={`w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors first:rounded-t-md ${
-                          language === 'ja' ? 'bg-accent' : ''
-                        }`}
-                      >
-                        日本語
-                      </button>
-                      <button
-                        onClick={() => handleLanguageChange('en')}
-                        className={`w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors last:rounded-b-md ${
-                          language === 'en' ? 'bg-accent' : ''
-                        }`}
-                      >
-                        English
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              <div className="border-t border-border pt-3 mt-3">
+              <div className="border-t border-white pt-3 mt-3">
                 {isAuthenticated ? (
                   <>
                     <Button variant="ghost" size="sm" className="w-full justify-start" disabled={isLoading}>

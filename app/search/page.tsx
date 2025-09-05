@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { searchCharts, SearchParams, SearchResponse } from '@/actions/composed/search/fetch';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
     Search, 
     Calendar, 
@@ -20,76 +19,73 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-// キャッシュ用の型
-interface CacheEntry {
-    data: SearchResponse;
-    timestamp: number;
-}
-
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     
     // 検索条件の状態
     const [query, setQuery] = useState(searchParams.get('q') || '');
-    const [searchBy, setSearchBy] = useState<'title' | 'username'>('title');
-    const [sortBy, setSortBy] = useState<'updatedAt' | 'goodCount'>('updatedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchBy, setSearchBy] = useState<'title' | 'username'>(
+        (searchParams.get('searchBy') as 'title' | 'username') || 'title'
+    );
+    const [sortBy, setSortBy] = useState<'updatedAt' | 'goodCount'>(
+        (searchParams.get('sortBy') as 'updatedAt' | 'goodCount') || 'updatedAt'
+    );
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(
+        (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
+    );
+    const [currentPage, setCurrentPage] = useState(
+        parseInt(searchParams.get('page') || '1')
+    );
     
     // 検索結果の状態
     const [searchData, setSearchData] = useState<SearchResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
-    // キャッシュ
-    const [cache, setCache] = useState<Map<string, CacheEntry>>(new Map());
-    
-    // キャッシュキーを生成
-    const getCacheKey = useCallback((params: SearchParams) => {
-        return `${params.query}-${params.sortBy}-${params.sortOrder}-${params.page}`;
-    }, []);
-    
-    // 検索実行
-    const performSearch = useCallback(async (params: SearchParams) => {
-        const cacheKey = getCacheKey(params);
-        const cached = cache.get(cacheKey);
-        
-        // キャッシュが存在し、5分以内の場合はキャッシュを使用
-        if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) {
-            setSearchData(cached.data);
-            return;
-        }
-        
-        setIsLoading(true);
-        setError(null);
-        
-        try {
-            const result = await searchCharts(params);
-            
-            if (result.error) {
-                setError(result.error.message);
-                setSearchData(null);
-            } else if (result.data) {
-                setSearchData(result.data);
-                // キャッシュに保存
-                setCache(prev => new Map(prev).set(cacheKey, {
-                    data: result.data!,
-                    timestamp: Date.now()
-                }));
+    // 初期表示時にクエリパラメータに基づいて検索実行
+    useEffect(() => {
+        const performInitialSearch = async () => {
+            // クエリパラメータに検索条件がある場合のみ検索実行
+            if (query || searchParams.get('q')) {
+                setIsLoading(true);
+                setError(null);
+                
+                try {
+                    const params: SearchParams = {
+                        query: query || searchParams.get('q') || '',
+                        searchBy,
+                        sortBy,
+                        sortOrder,
+                        page: currentPage,
+                        pageSize: 10
+                    };
+                    
+                    const result = await searchCharts(params);
+                    
+                    if (result.error) {
+                        setError(result.error.message);
+                        setSearchData(null);
+                    } else if (result.data) {
+                        setSearchData(result.data);
+                    }
+                } catch (err) {
+                    setError('検索中にエラーが発生しました');
+                    setSearchData(null);
+                } finally {
+                    setIsLoading(false);
+                }
             }
-        } catch (err) {
-            setError('検索中にエラーが発生しました');
-            setSearchData(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [cache, getCacheKey]);
+        };
+        
+        performInitialSearch();
+    }, []); // 初回のみ実行
     
     // URL更新関数
     const updateURL = () => {
         const newSearchParams = new URLSearchParams();
         if (query) newSearchParams.set('q', query);
+        if (searchBy !== 'title') newSearchParams.set('searchBy', searchBy);
         if (sortBy !== 'updatedAt') newSearchParams.set('sortBy', sortBy);
         if (sortOrder !== 'desc') newSearchParams.set('sortOrder', sortOrder);
         if (currentPage !== 1) newSearchParams.set('page', currentPage.toString());
@@ -97,34 +93,76 @@ export default function SearchPage() {
         const newUrl = `/search${newSearchParams.toString() ? '?' + newSearchParams.toString() : ''}`;
         router.replace(newUrl, { scroll: false });
     };
-    
+
     // 検索実行
-    const handleSearch = () => {
-        setCurrentPage(1);
-        const params: SearchParams = {
-            query,
-            searchBy,
-            sortBy,
-            sortOrder,
-            page: 1,
-            pageSize: 10
-        };
-        performSearch(params);
+    const handleSearch = async () => {
+        setCurrentPage(1); // 検索時は1ページ目に戻す
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const params: SearchParams = {
+                query,
+                searchBy,
+                sortBy,
+                sortOrder,
+                page: 1,
+                pageSize: 10
+            };
+            
+            const result = await searchCharts(params);
+            
+            if (result.error) {
+                setError(result.error.message);
+                setSearchData(null);
+            } else if (result.data) {
+                setSearchData(result.data);
+            }
+        } catch (err) {
+            setError('検索中にエラーが発生しました');
+            setSearchData(null);
+        } finally {
+            setIsLoading(false);
+        }
+        
+        // URLを更新
         updateURL();
     };
     
     // ページネーション
-    const handlePageChange = (page: number) => {
+    const handlePageChange = async (page: number) => {
         setCurrentPage(page);
-        const params: SearchParams = {
-            query,
-            searchBy,
-            sortBy,
-            sortOrder,
-            page,
-            pageSize: 10
-        };
-        performSearch(params);
+        
+        // 検索を実行
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const params: SearchParams = {
+                query,
+                searchBy,
+                sortBy,
+                sortOrder,
+                page,
+                pageSize: 10
+            };
+            
+            const result = await searchCharts(params);
+            
+            if (result.error) {
+                setError(result.error.message);
+                setSearchData(null);
+            } else if (result.data) {
+                setSearchData(result.data);
+            }
+        } catch (err) {
+            setError('検索中にエラーが発生しました');
+            setSearchData(null);
+        } finally {
+            setIsLoading(false);
+        }
+        
+        // URLを更新
         updateURL();
     };
     
@@ -133,48 +171,6 @@ export default function SearchPage() {
         setSortBy(newSortBy);
         setSortOrder(newSortOrder);
         setCurrentPage(1);
-    };
-    
-    // ページ番号の配列を生成
-    const getPageNumbers = () => {
-        if (!searchData) return [];
-        
-        const { currentPage, totalPages } = searchData;
-        const pages: (number | string)[] = [];
-        
-        // 最初の2ページ
-        for (let i = 1; i <= Math.min(2, totalPages); i++) {
-            pages.push(i);
-        }
-        
-        if (totalPages > 2) {
-            // 現在のページの前後2ページ
-            const start = Math.max(3, currentPage - 2);
-            const end = Math.min(totalPages - 1, currentPage + 2);
-            
-            if (start > 3) {
-                pages.push('...');
-            }
-            
-            for (let i = start; i <= end; i++) {
-                if (!pages.includes(i)) {
-                    pages.push(i);
-                }
-            }
-            
-            if (end < totalPages - 1) {
-                pages.push('...');
-            }
-            
-            // 最後の2ページ
-            for (let i = Math.max(totalPages - 1, 1); i <= totalPages; i++) {
-                if (!pages.includes(i)) {
-                    pages.push(i);
-                }
-            }
-        }
-        
-        return pages;
     };
     
     // 日付フォーマット
@@ -187,12 +183,14 @@ export default function SearchPage() {
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${year}/${month}/${day} ${hours}:${minutes}`;
     };
-
+    
     return (
         <div className="container mx-auto px-4 py-8">
+            <h1 className="text-2xl font-bold mb-6">Search Charts</h1>
+            
             {/* 検索フォーム */}
-            <div className="mb-8">
-                <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <div className="mb-6">
+                <div className="flex gap-2 mb-4">
                     <div className="flex-1">
                         <Input
                             type="text"
@@ -254,16 +252,16 @@ export default function SearchPage() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="desc">
-                                    <div className="flex items-center gap-2">
-                                        <ArrowDownZa className="w-4 h-4 text-white" />
-                                        Descending
-                                    </div>
-                                </SelectItem>
                                 <SelectItem value="asc">
                                     <div className="flex items-center gap-2">
                                         <ArrowDownAz className="w-4 h-4 text-white" />
                                         Ascending
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="desc">
+                                    <div className="flex items-center gap-2">
+                                        <ArrowDownZa className="w-4 h-4 text-white" />
+                                        Descending
                                     </div>
                                 </SelectItem>
                             </SelectContent>
@@ -272,27 +270,23 @@ export default function SearchPage() {
                 </div>
             </div>
             
-            {/* 検索結果 */}
-            {isLoading && (
-                <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-                    <p className="mt-2">Searching...</p>
-                </div>
-            )}
-            
+            {/* エラー表示 */}
             {error && (
-                <div className="text-red-500 text-center py-8">
+                <div className="mb-4 p-4 bg-red-900/20 border border-red-600/30 rounded-lg text-red-200">
                     {error}
                 </div>
             )}
             
-            {searchData && !isLoading && (
-                <>
-                    {/* 結果件数 */}
-                    <div className="mb-4">
-                        <p className="text-gray-400">
-                            {searchData.totalCount} results
-                        </p>
+            {/* 検索結果 */}
+            {isLoading ? (
+                <div className="text-center py-8">
+                    <div className="text-lg">Loading...</div>
+                </div>
+            ) : searchData ? (
+                <div>
+                    {/* 結果数表示 */}
+                    <div className="mb-4 text-sm text-gray-400">
+                        {searchData.totalCount} results found
                     </div>
                     
                     {/* 検索結果一覧 */}
@@ -328,30 +322,6 @@ export default function SearchPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <Card className="hover:bg-gray-800 transition-colors cursor-pointer">
-                                        <CardHeader className="">
-                                            <CardTitle className="">
-                                                {chart.title}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="pt-0 bg-red-500">
-                                            <div className="flex justify-between items-center">
-                                                <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                    <span>Created by <span className="text-white">{chart.user.username}</span></span>
-                                                </div>
-                                                <div className="flex items-center gap-4 text-sm text-gray-400">
-                                                    <div className="flex items-center gap-1">
-                                                        <ThumbsUp className="w-4 h-4" />
-                                                        {chart.goodCount}
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Calendar className="w-4 h-4" />
-                                                        {formatDate(chart.updatedAt)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card> */}
                                 </Link>
                             ))}
                         </div>
@@ -369,22 +339,9 @@ export default function SearchPage() {
                                 <ChevronLeft className="w-4 h-4" />
                             </Button>
                             
-                            {getPageNumbers().map((page, index) => (
-                                <div key={index}>
-                                    {page === '...' ? (
-                                        <span className="px-3 py-2 text-gray-400">...</span>
-                                    ) : (
-                                        <Button
-                                            variant={currentPage === page ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => handlePageChange(page as number)}
-                                            className="min-w-[40px]"
-                                        >
-                                            {page}
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
+                            <span className="px-4 py-2 text-sm">
+                                Page {currentPage} of {searchData.totalPages}
+                            </span>
                             
                             <Button
                                 variant="outline"
@@ -396,7 +353,11 @@ export default function SearchPage() {
                             </Button>
                         </div>
                     )}
-                </>
+                </div>
+            ) : (
+                <div className="text-center py-12">
+                    <p className="text-xl text-gray-400">Enter a search term to find charts.</p>
+                </div>
             )}
         </div>
     );
