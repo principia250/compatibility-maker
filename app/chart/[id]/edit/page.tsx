@@ -122,6 +122,7 @@ export default function ChartEditPage() {
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }>) => {
         setData((prev) => {
             if (!prev) return prev;
@@ -140,6 +141,7 @@ export default function ChartEditPage() {
                     rightElementId: comp.rightElementId,
                     compatibilityScore: comp.compatibilityScore,
                     reverseCompatibilityScore: comp.reverseCompatibilityScore,
+                    note: comp.note || undefined,
                 }));
             
             return {

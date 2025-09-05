@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { 
   Pencil,
@@ -10,9 +11,12 @@ import {
   Menu,
   X,
   Globe,
-  ChevronDown
+  ChevronDown,
+  Search,
 } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
+import { useLanguage } from '@/hooks/use-language';
+import clsx from 'clsx';
 
 export interface HeaderProps {
   className?: string;
@@ -22,28 +26,19 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [language, setLanguage] = useState<'ja' | 'en'>('en');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
   
   // カスタムフックからユーザーデータを取得
   const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+  
+  // 言語設定を取得
+  const { language, changeLanguage } = useLanguage();
 
   // クライアントサイドでのみ実行されることを保証
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // 言語設定の読み込み
-  useEffect(() => {
-    if (isClient) {
-      const savedLanguage = localStorage.getItem('language') as 'ja' | 'en' | null;
-      if (savedLanguage) {
-        setLanguage(savedLanguage);
-      }
-      setIsLanguageLoaded(true);
-    }
-  }, [isClient]);
 
   // ユーザーデータの取得
   useEffect(() => {
@@ -55,11 +50,14 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   // ドロップダウン外側クリックで閉じる
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isLanguageDropdownOpen) {
-        const target = event.target as Element;
-        if (!target.closest('.language-dropdown')) {
-          setIsLanguageDropdownOpen(false);
-        }
+      const target = event.target as Element;
+      
+      if (isLanguageDropdownOpen && !target.closest('.language-dropdown')) {
+        setIsLanguageDropdownOpen(false);
+      }
+      
+      if (isUserMenuOpen && !target.closest('.user-menu')) {
+        setIsUserMenuOpen(false);
       }
     };
 
@@ -69,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [isLanguageDropdownOpen, isClient]);
+  }, [isLanguageDropdownOpen, isUserMenuOpen, isClient]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -80,8 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   };
 
   const handleLanguageChange = (newLanguage: 'ja' | 'en') => {
-    setLanguage(newLanguage);
-    localStorage.setItem('language', newLanguage);
+    changeLanguage(newLanguage);
     setIsLanguageDropdownOpen(false);
   };
 
@@ -94,74 +91,76 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   };
 
   return (
-    <header className={`bg-background border-b border-border shadow-sm ${className}`}>
+    <header className={`bg-background border-b border-white ${className}`}>
       <div className="max-w-[900px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* ロゴ */}
-          <div className="flex items-center">
+          {/* 左寄り */}
+          <div className="flex sm:flex-row flex-col items-center space-x-2">
+            {/* ロゴ */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">CM</span>
+              <Image
+                src="/images/logos/logo.png"
+                alt="Compatibility Maker"
+                width={48}
+                height={48}
+                className="hidden sm:block"
+              />
+              <div>
+                <div className="text-lg sm:text-xl font-bold text-primary">SOUKOKU</div>
+                <div className="text-sm hidden sm:block">Compatibility Maker</div>
               </div>
-              <span className="text-xl font-bold text-foreground">
-                Compatibility Maker
-              </span>
             </Link>
+            <div className="text-sm bg-red-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">Alpha</div>
+            {/* <div className="text-sm bg-blue-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">Beta</div> */}
           </div>
 
-          {/* デスクトップナビゲーション */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link 
-              href="/charts" 
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              相性図一覧
-            </Link>
-            <Link 
-              href="/demo" 
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              デモ
-            </Link>
-            <Link 
-              href="/guidelines" 
-              className="hover:text-primary transition-colors"
-            >
-              <span className="flex items-center">
-                Make
-                <Pencil className="w-6 h-6" />
-              </span>
-            </Link>
-          </nav>
-
-          {/* ユーザーメニュー */}
-          <div className="flex items-center space-x-4">
+          {/* 右寄り */}
+          <div className="flex items-center space-x-2">
+            {/* デスクトップナビゲーション */}
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link 
+                href="/search" 
+                className="hover:text-primary flex items-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                Search
+              </Link>
+              <Link 
+                href={isAuthenticated ? "/mypage" : "/auth/sign-in"}
+                className="hover:text-primary flex items-center gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                Create
+              </Link>
+            </nav>
             {/* 言語選択セレクトボックス */}
-            <div className="relative language-dropdown">
+            <div className="relative language-dropdown text-xs sm:text-sm">
               <button
                 onClick={toggleLanguageDropdown}
-                className="flex items-center space-x-2 px-3 py-2 text-sm border border-border rounded-md bg-background hover:bg-accent transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 rounded-md bg-background"
               >
                 <Globe className="w-4 h-4" />
-                <span>{isLanguageLoaded ? getLanguageLabel(language) : 'English'}</span>
+                <span>{getLanguageLabel(language)}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {isLanguageDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-32 bg-background border border-border rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-1 w-32 bg-background border border-white rounded-md z-50 p-1">
                   <button
                     onClick={() => handleLanguageChange('ja')}
-                    className={`w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors first:rounded-t-md ${
-                      language === 'ja' ? 'bg-accent' : ''
-                    }`}
+                    className={clsx(
+                      "w-full px-3 py-2 text-left rounded-sm",
+                      "border border-transparent hover:border-white"
+                    )}
                   >
                     日本語
                   </button>
                   <button
                     onClick={() => handleLanguageChange('en')}
-                    className={`w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors last:rounded-b-md ${
-                      language === 'en' ? 'bg-accent' : ''
-                    }`}
+                    className={clsx(
+                      "w-full px-3 py-2 text-left rounded-sm",
+                      "border border-transparent hover:border-white"
+                    )}
                   >
                     English
                   </button>
@@ -169,41 +168,77 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               )}
             </div>
 
-            {/* デスクトップユーザーメニュー */}
-            <div className="hidden md:flex items-center space-x-2">
-               {isAuthenticated ? (
-                 <>
-                   <Button variant="ghost" size="sm" onClick={toggleUserMenu} disabled={isLoading}>
-                     <User className="w-4 h-4 mr-2" />
-                     {isLoading ? '読み込み中...' : username}
-                   </Button>
-                   <Button variant="outline" size="sm" onClick={logout} disabled={isLoading}>
-                     <LogOut className="w-4 h-4 mr-2" />
-                     ログアウト
-                   </Button>
-                 </>
-               ) : (
-                 <Button variant="outline" size="sm" asChild>
-                   <Link href="/auth/sign-in">ログイン</Link>
-                 </Button>
-               )}
-             </div>
+            {/* ユーザーメニュー */}
+            <div className="flex items-center space-x-4">
+              {/* デスクトップユーザーメニュー */}
+              <div className="hidden md:flex items-center space-x-2">
+                {isAuthenticated ? (
+                  <div className="relative user-menu">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={toggleUserMenu} 
+                      disabled={isLoading}
+                      className="flex items-center gap-2"
+                    >
+                      {isLoading ? 'Loading...' : username}
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {isUserMenuOpen && (
+                      <div className="absolute right-0 mt-1 w-40 bg-background border border-white rounded-md z-50 p-1">
+                        <Link
+                          href="/mypage"
+                          className="block w-full px-3 py-2 text-sm text-left rounded-sm border border-transparent hover:border-white"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          My page
+                        </Link>
+                        <Link
+                          href="/account"
+                          className="block w-full px-3 py-2 text-sm text-left rounded-sm border border-transparent hover:border-white"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          Account
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsUserMenuOpen(false);
+                          }}
+                          className="text-destructive flex items-center gap-2 w-full px-3 py-2 text-sm text-left rounded-sm border border-transparent hover:border-white"
+                          disabled={isLoading}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Log out
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/auth/sign-in">Log in</Link>
+                  </Button>
+                )}
+              </div>
 
-            {/* モバイルメニューボタン */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={toggleMobileMenu}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </Button>
+              {/* モバイルメニューボタン */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden"
+                onClick={toggleMobileMenu}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
+
 
         {/* モバイルメニュー */}
         {isMobileMenuOpen && (
@@ -217,6 +252,13 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 相性図一覧
               </Link>
               <Link 
+                href="/search" 
+                className="text-foreground hover:text-primary transition-colors px-2 py-1"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Search
+              </Link>
+              <Link 
                 href="/demo" 
                 className="text-foreground hover:text-primary transition-colors px-2 py-1"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -224,11 +266,11 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 デモ
               </Link>
               <Link 
-                href="/guidelines" 
+                href={isAuthenticated ? "/mypage" : "/auth/sign-in"}
                 className="text-foreground hover:text-primary transition-colors px-2 py-1"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                ガイドライン
+                Create
               </Link>
               {/* モバイル言語選択 */}
               <div className="px-2 py-1">
@@ -239,7 +281,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                   >
                     <div className="flex items-center space-x-2">
                       <Globe className="w-4 h-4" />
-                      <span>{isLanguageLoaded ? getLanguageLabel(language) : 'English'}</span>
+                      <span>{getLanguageLabel(language)}</span>
                     </div>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>

@@ -17,6 +17,26 @@ export const ExplanatoryNote = () => {
         )
         
     }
+
+    const drawArrowWithNote = () => {
+        return (
+            <div className="flex flex-row items-center gap-2">
+                <Arrow 
+                    length={50} 
+                    angle={0} 
+                    color={"#FFFFFF"} 
+                    note="Notes will be displayed here."
+                    leftElementName="item 1"
+                    rightElementName="item 2"
+                    score={0}
+                    scoreNotation="0"
+                />
+                <div>
+                    Click thick arrows to view notes
+                </div>
+            </div>
+        )
+    }
     return (
         <div className="flex flex-col w-fit gap-4 border border-white p-2 rounded-lg">
             <div className="flex flex-col items-start gap-6">
@@ -29,10 +49,14 @@ export const ExplanatoryNote = () => {
                         {drawArrow(0)}
                     </div>
                 </div>
-                <div className="flex flex-row sm:flex-row-reverse gap-6">
+                <div className="flex flex-col sm:flex-row gap-6">
+                {/* <div className="flex flex-row sm:flex-row-reverse gap-6"> */}
                     <div className="flex flex-col sm:flex-row sm:flex-row-reverse gap-6">
                         {drawArrow(-1)}
                         {drawArrow(-2)}
+                    </div>
+                    <div>
+                        {drawArrowWithNote()}
                     </div>
                 </div>
             </div>

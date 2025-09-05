@@ -4,6 +4,7 @@ import { NodeAndEdgeProps } from './type';
 import { Node, nodeHeight, nodeHeightSm } from './Node';
 import { Arrow } from './Arrow';
 import { COMPABILITY_COLOR } from '@/constants/compability-color';
+import { COMPABILITY_NOTATION } from '@/constants/compability-notation';
 import { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../ui/input';
@@ -161,15 +162,25 @@ const NodeAndEdge = ({
         const heightSm = (leftIndex - rightIndex) * (nodeHeightSm + nodeGap)
         const width = centerWidth
         const widthSm = centerWidthSm
+        const leftElement = leftElementsLocal?.[leftIndex];
+        const rightElement = rightElementsLocal?.[rightIndex];
+        const score = compatibility.compatibilityScore ?? 0;
+        const scoreNotation = COMPABILITY_NOTATION[score.toString() as keyof typeof COMPABILITY_NOTATION];
+        
         return {
             id: compatibility.id,
             length: Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)),
             lengthSm: Math.sqrt(Math.pow(widthSm, 2) + Math.pow(heightSm, 2)),
             angle: -Math.atan2(height, width) * 180 / Math.PI,
             angleSm: -Math.atan2(heightSm, widthSm) * 180 / Math.PI,
-            color: COMPABILITY_COLOR[(compatibility.compatibilityScore ?? 0).toString() as keyof typeof COMPABILITY_COLOR],
+            color: COMPABILITY_COLOR[score.toString() as keyof typeof COMPABILITY_COLOR],
             y: nodeHeight / 2 + (nodeHeight + nodeGap) * leftIndex - height / 2,
             ySm: nodeHeightSm / 2 + (nodeHeightSm + nodeGap) * leftIndex - heightSm / 2,
+            leftElementName: leftElement?.text || '',
+            rightElementName: rightElement?.text || '',
+            score,
+            scoreNotation,
+            note: compatibility.note || null
         }
     })
 
@@ -375,6 +386,11 @@ const NodeAndEdge = ({
                                     length={arrowVariable.lengthSm}
                                     angle={arrowVariable.angleSm}
                                     color={arrowVariable.color}
+                                    leftElementName={arrowVariable.leftElementName}
+                                    rightElementName={arrowVariable.rightElementName}
+                                    score={arrowVariable.score}
+                                    scoreNotation={arrowVariable.scoreNotation}
+                                    note={arrowVariable.note || undefined}
                                 />
                             </div>
                         )
@@ -397,6 +413,11 @@ const NodeAndEdge = ({
                                     length={arrowVariable.length}
                                     angle={arrowVariable.angle}
                                     color={arrowVariable.color}
+                                    leftElementName={arrowVariable.leftElementName}
+                                    rightElementName={arrowVariable.rightElementName}
+                                    score={arrowVariable.score}
+                                    scoreNotation={arrowVariable.scoreNotation}
+                                    note={arrowVariable.note || undefined}
                                 />
                             </div>
                         )

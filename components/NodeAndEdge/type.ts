@@ -12,6 +12,7 @@ export interface NodeAndEdgeProps {
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }[];
     leftCanHide: boolean;
     rightCanHide: boolean;
@@ -27,6 +28,7 @@ export interface NodeAndEdgeProps {
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }>) => void;
     handleNodeNameChange?: (elementId: string, newName: string, side: "left" | "right") => void;
     handleDeleteNode?: (elementId: string, side: "left" | "right") => void;

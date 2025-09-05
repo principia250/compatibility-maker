@@ -48,11 +48,13 @@ interface EditCompatibilityDialogProps {
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }>;
     onSave: (compatibilities: Array<{
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }>) => void;
     onLeftNodeNameChange?: (newName: string) => void;
     onDelete?: () => void;
@@ -74,6 +76,7 @@ export const EditCompatibilityDialog = ({
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }>>([]);
     const [localLeftNodeName, setLocalLeftNodeName] = useState(leftNodeName);
 
@@ -85,6 +88,7 @@ export const EditCompatibilityDialog = ({
                 rightElementId: rightNode.id,
                 compatibilityScore: existing?.compatibilityScore ?? null,
                 reverseCompatibilityScore: existing?.reverseCompatibilityScore ?? null,
+                note: existing?.note ?? '',
             };
         });
         setLocalCompatibilities(initialCompatibilities);
@@ -96,6 +100,16 @@ export const EditCompatibilityDialog = ({
             prev.map(comp => 
                 comp.rightElementId === rightElementId 
                     ? { ...comp, compatibilityScore: score, reverseCompatibilityScore: score ? -score : 0 }
+                    : comp
+            )
+        );
+    };
+
+    const handleNoteChange = (rightElementId: string, note: string) => {
+        setLocalCompatibilities(prev => 
+            prev.map(comp => 
+                comp.rightElementId === rightElementId 
+                    ? { ...comp, note }
                     : comp
             )
         );
@@ -149,23 +163,36 @@ export const EditCompatibilityDialog = ({
                                 const currentScore = compatibility?.compatibilityScore ?? null;
                                 
                                 return (
-                                    <div key={rightNode.id} className="flex items-center justify-between gap-4">
-                                        <Label className="flex-1">{rightNode.name}</Label>
-                                        <Select
-                                            value={currentScore === null ? "null" : currentScore.toString()}
-                                            onValueChange={(value) => handleCompatibilityChange(rightNode.id, value === "null" ? null : parseInt(value))}
-                                        >
-                                            <SelectTrigger className="w-24">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {COMPATIBILITY_OPTIONS.map((option) => (
-                                                    <SelectItem key={option.value ?? "null"} value={option.value?.toString() ?? "null"}>
-                                                        <span className="text-lg">{option.symbol}</span>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                    <div key={rightNode.id} className="border border-white rounded-lg p-2">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <Label className="flex-1">{rightNode.name}</Label>
+                                            <Select
+                                                value={currentScore === null ? "null" : currentScore.toString()}
+                                                onValueChange={(value) => handleCompatibilityChange(rightNode.id, value === "null" ? null : parseInt(value))}
+                                            >
+                                                <SelectTrigger className="w-24">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {COMPATIBILITY_OPTIONS.map((option) => (
+                                                        <SelectItem key={option.value ?? "null"} value={option.value?.toString() ?? "null"}>
+                                                            <span className="text-lg">{option.symbol}</span>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="mt-2">
+                                            <div className="flex flex-col gap-1">
+                                                <Label className="text-sm">Note</Label>
+                                                <Input 
+                                                    value={compatibility?.note ?? ""} 
+                                                    onChange={(e) => handleNoteChange(rightNode.id, e.target.value)}
+                                                    placeholder="Enter note (optional)"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 );
                             })}

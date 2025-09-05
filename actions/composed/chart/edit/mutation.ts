@@ -218,7 +218,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                         left_element_id: comp.leftElementId,
                         right_element_id: comp.rightElementId,
                         compatibility_score_id: scoreToIdMap.get(comp.compatibilityScore!)!,
-                        reverse_compatibility_score_id: scoreToIdMap.get(comp.reverseCompatibilityScore!)!
+                        reverse_compatibility_score_id: scoreToIdMap.get(comp.reverseCompatibilityScore!)!,
+                        note: comp.note || null
                     }))
                     .filter(comp => comp.compatibility_score_id && comp.reverse_compatibility_score_id); // 有効なIDのみ
 

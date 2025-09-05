@@ -33,6 +33,7 @@ export interface ChartDetailData {
         rightElementId: string;
         compatibilityScore: number;
         reverseCompatibilityScore: number;
+        note?: string;
     }[]
     comments: {
         id: string;
@@ -82,6 +83,7 @@ export const fetchChartDetailData = async (props: { chartId: string, loginUserId
                     id,
                     left_element_id,
                     right_element_id,
+                    note,
                     compatibility_scores!compatibilities_compatibility_score_id_fkey (
                         score
                     ),
@@ -205,7 +207,8 @@ export const fetchChartDetailData = async (props: { chartId: string, loginUserId
                     leftElementId: compatibility.left_element_id,
                     rightElementId: compatibility.right_element_id,
                     compatibilityScore: compatibility.compatibility_scores?.score || 0,
-                    reverseCompatibilityScore: compatibility.reverse_compatibility_scores?.score || 0
+                    reverseCompatibilityScore: compatibility.reverse_compatibility_scores?.score || 0,
+                    note: compatibility.note || null
                 })) || [],
                 comments: chartData.comments?.map((comment: any) => ({
                     id: comment.id,

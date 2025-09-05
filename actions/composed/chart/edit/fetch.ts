@@ -29,6 +29,7 @@ export interface ChartEditData {
         rightElementId: string;
         compatibilityScore: number | null;
         reverseCompatibilityScore: number | null;
+        note?: string;
     }[]
 }
 
@@ -62,6 +63,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                     id,
                     left_element_id,
                     right_element_id,
+                    note,
                     compatibility_scores!compatibilities_compatibility_score_id_fkey (
                         score
                     ),
@@ -151,7 +153,8 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                     leftElementId: compatibility.left_element_id,
                     rightElementId: compatibility.right_element_id,
                     compatibilityScore: compatibility.compatibility_scores?.score || 0,
-                    reverseCompatibilityScore: compatibility.reverse_compatibility_scores?.score || 0
+                    reverseCompatibilityScore: compatibility.reverse_compatibility_scores?.score || 0,
+                    note: compatibility.note || null
                 })) || [],
             },
             error: null
