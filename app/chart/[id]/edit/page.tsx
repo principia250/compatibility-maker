@@ -83,13 +83,22 @@ export default function ChartEditPage() {
             if (error) {
                 throw error
             }
+            
+            // 作成者チェック
+            if (data && data.userId !== user.id) {
+                redirect("/");
+            }
+            
             setData(data)
             if (initialDataRef.current === null) {
                 initialDataRef.current = data;
             }
-            console.log(data)
         }
-        fetch()
+        
+        // chartIdとuserが存在する場合のみ実行
+        if (chartId && user?.id) {
+            fetch()
+        }
     },[user, chartId])
 
     // カテゴリ名変更時の処理

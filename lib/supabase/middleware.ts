@@ -47,12 +47,25 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
+  // チャート編集ページかどうかをチェック
+  const isChartEditPage = request.nextUrl.pathname.match(/^\/chart\/[^\/]+\/edit/);
+  
+  // 未ログインユーザーがアクセスできない条件
+  const shouldRedirect = !user && (
+    // チャート編集ページにアクセスしている
+    isChartEditPage ||
+    // その他の認証が必要なパス（ホームページ以外）
+    (request.nextUrl.pathname !== "/" && 
+     !request.nextUrl.pathname.startsWith("/login") &&
+     !request.nextUrl.pathname.startsWith("/auth") &&
+     !request.nextUrl.pathname.startsWith("/chart/") &&
+     !request.nextUrl.pathname.startsWith("/search") &&
+     !request.nextUrl.pathname.startsWith("/privacy") &&
+     !request.nextUrl.pathname.startsWith("/guidelines") &&
+     !request.nextUrl.pathname.startsWith("/how-to-use"))
+  );
+
+  if (shouldRedirect) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";

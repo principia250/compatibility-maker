@@ -126,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 Search
               </Link>
               <Link 
-                href={isAuthenticated ? "/mypage" : "/auth/sign-in"}
+                href={isAuthenticated ? "/mypage" : "/auth/login"}
                 className="hover:text-primary flex items-center gap-2"
               >
                 <Pencil className="w-4 h-4" />
@@ -217,7 +217,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                   </div>
                 ) : (
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/auth/sign-in">Log in</Link>
+                    <Link href="/auth/login">Log in</Link>
                   </Button>
                 )}
               </div>
@@ -253,7 +253,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 Search
               </Link>
               <Link 
-                href={isAuthenticated ? "/mypage" : "/auth/sign-in"}
+                href={isAuthenticated ? "/mypage" : "/auth/login"}
                 className="hover:text-primary flex items-center px-2 py-1"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -276,12 +276,12 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                       disabled={isLoading}
                     >
                       <LogOut className="w-4 h-4 mr-2" />
-                      ログアウト
+                      Log out
                     </Button>
                   </>
                 ) : (
                   <Button variant="outline" size="sm" className="w-full justify-start" asChild>
-                    <Link href="/auth/sign-in">ログイン</Link>
+                    <Link href="/auth/login">Log in</Link>
                   </Button>
                 )}
               </div>

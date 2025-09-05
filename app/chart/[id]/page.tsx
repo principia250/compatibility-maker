@@ -30,27 +30,32 @@ export default function ChartDetailPage() {
     const [optimisticGood, setOptimisticGood] = useState<boolean | null>(null)
 
     useEffect(() => {
-        if(isLoading || user) {
+        // ユーザー認証のローディングが完了したら、チャートデータの取得を開始
+        if(!isLoading) {
             setIsLoadingState(false)
         }
     },[isLoading])
 
     useEffect(() => {
         const fetch = async () => {
-            if (user?.id === null || user?.id === undefined || user?.id === '') {
-                return
-            }
             if (!chartId) {
                 return
             }
-            const { data: data, error: error } = await fetchChartDetailData({ loginUserId: user.id, chartId: chartId})
+            // 未ログインユーザーでもチャートデータを取得
+            const { data: data, error: error } = await fetchChartDetailData({ 
+                loginUserId: user?.id, 
+                chartId: chartId
+            })
             if (error) {
                 throw error
             }
             setData(data)
         }
-        fetch()
-    },[user, chartId])
+        // ユーザー認証のローディングが完了してから実行
+        if (!isLoading) {
+            fetch()
+        }
+    },[user, chartId, isLoading])
 
     const handleSubmitComment = async () => {
         if (!comment.trim() || !user?.id || !chartId) {
@@ -183,7 +188,7 @@ export default function ChartDetailPage() {
         }
     };
 
-    if(isLoading || isLoadingState || !data) {
+    if(isLoading || !data) {
         return <Loading />
     }
 
@@ -228,46 +233,72 @@ export default function ChartDetailPage() {
         />
         {/* ブックマークとグッド */}
         <div className="flex flex-row justify-end gap-4">
-            <Bookmark 
-                className={clsx(
-                    "w-9 h-9 cursor-pointer transition-colors", 
-                    optimisticBookmark !== null 
-                        ? (optimisticBookmark ? "text-sky-600" : "text-white")
-                        : (data.bookmark ? "text-sky-600" : "text-white")
-                )}
-                onClick={handleToggleBookmark}
-            />
-            <ThumbsUp 
-                className={clsx(
-                    "w-8 h-8 cursor-pointer transition-colors", 
-                    optimisticGood !== null 
-                        ? (optimisticGood ? "text-yellow-300" : "text-white")
-                        : (data.good ? "text-yellow-300" : "text-white")
-                )}
-                onClick={handleToggleGood}
-            />
+            {isAuthenticated ? (
+                <>
+                    <Bookmark 
+                        className={clsx(
+                            "w-9 h-9 cursor-pointer transition-colors", 
+                            optimisticBookmark !== null 
+                                ? (optimisticBookmark ? "text-sky-600" : "text-white")
+                                : (data.bookmark ? "text-sky-600" : "text-white")
+                        )}
+                        onClick={handleToggleBookmark}
+                    />
+                    <ThumbsUp 
+                        className={clsx(
+                            "w-8 h-8 cursor-pointer transition-colors", 
+                            optimisticGood !== null 
+                                ? (optimisticGood ? "text-yellow-300" : "text-white")
+                                : (data.good ? "text-yellow-300" : "text-white")
+                        )}
+                        onClick={handleToggleGood}
+                    />
+                </>
+            ) : (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Please</span>
+                    <CustomLink href="/auth/login" className="text-primary hover:text-primary/80 underline">
+                        log in
+                    </CustomLink>
+                    <span>to bookmark or like this chart</span>
+                </div>
+            )}
         </div>
         {/* コメント */}
         <div className="flex flex-col gap-4">
             {/* セパレータ */}
             <div className="text-lg font-bold border-b border-white">Comments</div>
-            {/* 投稿フォーム */}
-            <Input
-                placeholder="Add a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                maxLength={300}
-            />
-            {comment.length > 0 && (
-                <div className="flex justify-end">
-                    <Button 
-                        onClick={handleSubmitComment}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Posting...' : 'Comment'}
-                    </Button>
+            
+            {isAuthenticated ? (
+                <>
+                    {/* 投稿フォーム */}
+                    <Input
+                        placeholder="Add a comment..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        maxLength={300}
+                    />
+                    {comment.length > 0 && (
+                        <div className="flex justify-end">
+                            <Button 
+                                onClick={handleSubmitComment}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Posting...' : 'Comment'}
+                            </Button>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="flex items-center gap-2 text-sm text-gray-400 py-4">
+                    <span>Please</span>
+                    <CustomLink href="/auth/login" className="text-primary hover:text-primary/80 underline">
+                        log in
+                    </CustomLink>
+                    <span>to post a comment</span>
                 </div>
             )}
+            
             {/* コメント一覧 */}
             {data.comments.map((comment) => (
                 <CommentCard
@@ -277,6 +308,7 @@ export default function ChartDetailPage() {
                     createdAt={comment.createdAt}
                 />
             ))}
+            
             {/* コメントページへのリンク */}
             <div className="flex justify-end">
                 <CustomLink href={`/chart/${chartId}/comments`}>

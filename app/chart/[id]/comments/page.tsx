@@ -11,17 +11,10 @@ import { ArrowLeft } from "lucide-react";
 import { CommentCard } from "@/components/ui/comment-card";
 
 export default function ChartCommentsPage() {
-    const [isLoadingState, setIsLoadingState] = useState<boolean>(true);
     const { user, isLoading, isAuthenticated } = useUser();
     const params = useParams<{ id: string }>();
     const chartId = params?.id;
     const [data, setData] = useState<ChartCommentsData | null>(null);
-
-    useEffect(() => {
-        if (isLoading || user) {
-            setIsLoadingState(false);
-        }
-    }, [isLoading]);
 
     useEffect(() => {
         const fetch = async () => {
@@ -34,16 +27,17 @@ export default function ChartCommentsPage() {
             }
             setData(data);
         };
-        fetch();
-    }, [chartId]);
+        // ユーザー認証のローディングが完了してから実行
+        if (!isLoading) {
+            fetch();
+        }
+    }, [chartId, isLoading]);
 
-    if (isLoading || isLoadingState || !data) {
+    if (isLoading || !data) {
         return <Loading />;
     }
 
-    if (!isLoading && !isLoadingState && !isAuthenticated) {
-        redirect("/auth/login");
-    }
+
 
     return (
         <div className="flex flex-col gap-6">

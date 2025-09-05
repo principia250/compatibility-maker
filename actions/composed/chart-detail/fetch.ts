@@ -48,7 +48,7 @@ export interface ChartDetailData {
     good: string | null;
 }
 
-export const fetchChartDetailData = async (props: { chartId: string, loginUserId: string }): Promise<Response<ChartDetailData>> => {
+export const fetchChartDetailData = async (props: { chartId: string, loginUserId?: string }): Promise<Response<ChartDetailData>> => {
     const supabase = await createClient();
 
     try {
@@ -108,31 +108,40 @@ export const fetchChartDetailData = async (props: { chartId: string, loginUserId
             .limit(10, { foreignTable: 'comments' })
             .single();
 
-        // ブックマークとgoodの有無を並列で取得
-        const [bookmarkResult, goodResult] = await Promise.all([
-            supabase
-                .from('bookmarks')
-                .select('id')
-                .eq('chart_id', props.chartId)
-                .eq('user_id', props.loginUserId)
-                .maybeSingle(),
-            
-            supabase
-                .from('goods')
-                .select('id')
-                .eq('chart_id', props.chartId)
-                .eq('user_id', props.loginUserId)
-                .maybeSingle()
-        ]);
+        // ブックマークとgoodの有無を並列で取得（ログインユーザーのみ）
+        let bookmarkData = null;
+        let goodData = null;
+        let bookmarkError = null;
+        let goodError = null;
 
-        const { data: bookmarkData, error: bookmarkError } = bookmarkResult;
-        const { data: goodData, error: goodError } = goodResult;
+        if (props.loginUserId) {
+            const [bookmarkResult, goodResult] = await Promise.all([
+                supabase
+                    .from('bookmarks')
+                    .select('id')
+                    .eq('chart_id', props.chartId)
+                    .eq('user_id', props.loginUserId)
+                    .maybeSingle(),
+                
+                supabase
+                    .from('goods')
+                    .select('id')
+                    .eq('chart_id', props.chartId)
+                    .eq('user_id', props.loginUserId)
+                    .maybeSingle()
+            ]);
+
+            bookmarkData = bookmarkResult.data;
+            goodData = goodResult.data;
+            bookmarkError = bookmarkResult.error;
+            goodError = goodResult.error;
+        }
         
         if (chartError || bookmarkError || goodError) {
             return {
                 data: null,
                 error: {
-                    message: 'データの取得に失敗しました'
+                    message: 'Failed to fetch chart detail data'
                 }
             };
         }

@@ -7,6 +7,7 @@ export interface ChartEditData {
     id: string;
     title: string;
     isPublic: boolean;
+    userId: string;
     leftCategory: {
         id: string;
         name: string;
@@ -36,6 +37,16 @@ export interface ChartEditData {
 export const fetchChartEditData = async (props: { chartId: string }): Promise<Response<ChartEditData>> => {
     const supabase = await createClient();
 
+    // chartIdの検証
+    if (!props.chartId || props.chartId === 'undefined') {
+        return {
+            data: null,
+            error: {
+                message: 'Invalid chart ID'
+            }
+        };
+    }
+
     try {
         const { data: chartData, error: chartError } = await supabase
             .from('compatibility_charts')
@@ -43,6 +54,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                 id,
                 title,
                 is_public,
+                user_id,
                 left_categories:element_categories!element_categories_chart_id_fkey (
                     id,
                     name,
@@ -78,10 +90,11 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
             .single();
         
         if (chartError) {
+            console.error(chartError);
             return {
                 data: null,
                 error: {
-                    message: 'データの取得に失敗しました'
+                    message: 'Failed to fetch chart edit data'
                 }
             };
         }
@@ -132,6 +145,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
                 id: chartData.id,
                 title: chartData.title,
                 isPublic: chartData.is_public,
+                userId: chartData.user_id,
                 leftCategory: {
                     id: chartData.left_categories[0]?.id || '',
                     name: chartData.left_categories[0]?.name || '',
@@ -163,7 +177,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

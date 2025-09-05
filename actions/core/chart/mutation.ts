@@ -32,15 +32,23 @@ export async function createChart({ title, isPublic, userId }: CreateChartParams
 
     if (error) {
       console.error('Chart creation error:', error);
-      return { data: null, error: "チャートの作成に失敗しました" };
+      return { data: null, error: "Failed to create chart" };
     }
+
+    if (!data || data.length === 0) {
+      console.error('No data returned from RPC');
+      return { data: null, error: "Failed to create chart" };
+    }
+
+    // RPCは配列を返すので、最初の要素を取得
+    const chartData = data[0];
 
     // キャッシュを無効化
     revalidatePath('/mypage');
     
-    return { data: data, error: null };
+    return { data: chartData, error: null };
   } catch (error) {
     console.error('Unexpected error in createChart:', error);
-    return { data: null, error: "予期しないエラーが発生しました" };
+    return { data: null, error: "Unexpected error occurred" };
   }
 }

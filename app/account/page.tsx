@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,18 +8,27 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteAccountDialog } from "@/components/dialogs/auth/DeleteAccountDialog";
 import { updateUsername as updateUsernameAction, deleteAccount } from "@/actions/account";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Loading from "@/components/loading";
 import CustomLink from "@/components/CustomLink";
+import { useTranslation } from '@/lib/i18n';
 
 export default function AccountPage() {
-    const { user, username, fetchUser, logout, updateUsername } = useUser();
+    const { user, username, fetchUser, logout, updateUsername, isLoading, isAuthenticated } = useUser();
     const [newUsername, setNewUsername] = useState(username || "");
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const router = useRouter();
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        if(isLoading || user) {
+            setIsLoadingState(false)
+        }
+    },[isLoading])
 
     const handleUpdateUsername = async () => {
         if (!newUsername.trim()) {
@@ -73,8 +82,12 @@ export default function AccountPage() {
         }
     };
 
-    if (!user) {
+    if (isLoading || isLoadingState || !user) {
         return <Loading />;
+    }
+
+    if(!isLoading && !isLoadingState && !isAuthenticated) {
+    redirect("/auth/login")
     }
 
     return (
@@ -85,7 +98,7 @@ export default function AccountPage() {
                 </div>
 
                 {/* ユーザー名変更 */}
-                <Card>
+                {/* <Card>
                     <CardHeader>
                         <CardTitle>Username</CardTitle>
                         <CardDescription>
@@ -120,19 +133,24 @@ export default function AccountPage() {
                             {isUpdating ? "Updating..." : "Update username"}
                         </Button>
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* パスワード変更 */}
-                <div>
-                    <CustomLink href="/auth/update-password">Update password</CustomLink>
-                </div>
+                <Card>
+                    <CardContent>
+                        <CustomLink href="/auth/update-password">Update password</CustomLink>
+                    </CardContent>
+                </Card>
 
                 {/* アカウント削除 */}
                 <Card className="border-red-600">
                     <CardHeader>
                         <CardTitle className="text-red-600">Dangerous operation</CardTitle>
                         <CardDescription>
-                            Deleting your account will permanently delete all your data and cannot be restored.
+                            {t(
+                                "アカウントを削除すると、すべてのデータが永久に削除され、復元できません。", 
+                                "Deleting your account will permanently delete all your data and cannot be restored."
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import CustomLink from "@/components/CustomLink";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useUser } from "@/hooks/use-user";
 
 export function LoginForm({
   className,
@@ -25,6 +26,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { fetchUser } = useUser();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +40,12 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      
+      // ユーザー情報を取得してストアに保存
+      await fetchUser();
+      
+      // ホームページにリダイレクト（ページ全体をリロードして確実に状態を更新）
+      window.location.href = "/";
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

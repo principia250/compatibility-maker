@@ -1,14 +1,5 @@
 'use client';
 
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n';
 
@@ -54,8 +45,8 @@ export default function HomePage() {
       <div 
         dangerouslySetInnerHTML={{
           __html: t(
-            'このサイトは、ゲーム等における相性を整理し、可視化するアプリケーションです。あなたがゲームの理解を深めることを助け、戦略を立てることを支援します。<br />作成した相性図は公開し、他のユーザーと共有することができます。<br />ゲームを愛するすべての人にとって、このサイトが役立つことを願っています。',
-            'This site is an application for organizing and visualizing compatibility in games. It helps you deepen your understanding of games and supports you in developing strategies.<br />Created compatibility charts can be made public and shared with other users.<br />We hope this site will be useful for everyone who loves games.'
+            'このサイトは、ゲーム等における相性を整理し、可視化するアプリケーションです。あなたがゲームの理解を深めることを助け、戦略を立てることを支援します。<br /><br />作成した相性図は公開し、他のユーザーと共有することができます。<br /><br />ゲームを愛するすべての人にとって、このサイトが役立つことを願っています。',
+            'This site is an application for organizing and visualizing compatibility in games. It helps you deepen your understanding of games and supports you in developing strategies.<br /><br />Created compatibility charts can be made public and shared with other users.<br /><br />We hope this site will be useful for everyone who loves games.'
           )
         }}
       />
@@ -80,7 +71,7 @@ export default function HomePage() {
         </h2>
         {/* コンテンツ部分 */}
         <div className="border border-white rounded-lg p-4">
-          <NewsCard date="2025-09-05" content={t('サイトを公開しました。', 'The site is now open.')} />
+          <NewsCard date="2025/09/05" content={t('サイトを公開しました。', 'The site is now open.')} />
         </div>
       </div>
     </div>

@@ -42,7 +42,8 @@ export const Node = ({
                     "text-xs sm:text-base w-[35px] sm:w-[50px] h-full p-2",
                     "flex items-center justify-center",
                 )}>
-                    {score?.toFixed(2) || '0.00'}
+                    {/* {score?.toFixed(2) || '0.00'} */}
+                    {isVisible ? score?.toFixed(2) || '0.00' : '-'}
                 </div>
             )}
 

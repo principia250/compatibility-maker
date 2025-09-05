@@ -56,7 +56,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
         setOpen(false);
         
         // 編集ページに遷移
-        router.push(`/charts/${data.id}/edit`);
+        router.push(`/chart/${data.id}/edit`);
       }
     } catch (error) {
       console.error('Unexpected error:', error);

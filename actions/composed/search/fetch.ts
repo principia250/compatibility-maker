@@ -50,7 +50,7 @@ export const searchCharts = async (params: SearchParams): Promise<Response<Searc
                     id,
                     username
                 ),
-                goods (id)
+                goods!goods_chart_id_fkey (id)
             `)
             .eq('is_public', true);
 

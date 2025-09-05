@@ -25,7 +25,7 @@ interface UserState {
 
 export const useUserStore = create<UserState>()((set, get) => ({
   user: null,
-  isLoading: false,
+  isLoading: true, // 初期状態はローディング中
   error: null,
 
   setUser: (user) => set({ user, error: null }),
@@ -35,9 +35,6 @@ export const useUserStore = create<UserState>()((set, get) => ({
   setError: (error) => set({ error, isLoading: false }),
 
   fetchUser: async () => {
-    const { isLoading } = get();
-    if (isLoading) return; // 重複リクエストを防ぐ
-
     set({ isLoading: true, error: null });
 
     try {
@@ -92,6 +89,9 @@ export const useUserStore = create<UserState>()((set, get) => ({
       const supabase = createClient();
       await supabase.auth.signOut();
       set({ user: null, isLoading: false, error: null });
+      
+      // ページをリロードしてホームに遷移
+      window.location.href = '/';
     } catch (error) {
       console.error('ログアウトエラー:', error);
       set({ 
