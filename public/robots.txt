@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://soukoku.vercel.app/sitemap.xml
+Sitemap: https://soukoku.work/sitemap.xml

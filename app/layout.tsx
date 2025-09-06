@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: 'SOUKOKU - Compatibility Maker',
     description: 'Create and manage compatibility charts',
     type: 'website',
-    url: 'https://soukoku.vercel.app',
+    url: 'https://soukoku.work',
     siteName: 'SOUKOKU',
     images: [
       {

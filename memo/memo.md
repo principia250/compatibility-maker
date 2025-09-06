@@ -1,13 +1,23 @@
+## 利用サービス
+- ホスティング
+  - vercel
+- データベース
+  - supabase
+- ドメイン
+  - cloudflare
+- メール
+  - resend
+
+## resend
+name: soukoku-supabase
+APIキーはメモしてない
+
 ## supabase
 
 supabase link --project-ref <project-id>
 supabase gen types typescript --project-id <project-id> > database.types.ts
 
 ## Phase1 初期リリース
-
-- 未 vercelとsupabaseの連携
-- 済 supabaseのproプラン契約
-- 未 SMTPサーバーの設定
 
 ## Phase2 広告導入
 
