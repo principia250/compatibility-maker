@@ -35,23 +35,23 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Xアカウント */}
               <a
-                href="https://x.com/your_account"
+                href="https://x.com/SOUKOKU_app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm hover:text-primary transition-colors group"
               >
                 <X className="w-4 h-4" />
-                <span>@your_account</span>
+                <span>@SOUKOKU_app</span>
                 <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
               
               {/* メールアドレス */}
               <a
-                href="mailto:contact@example.com"
+                href="mailto:soukoku.app@gmail.com"
                 className="flex items-center gap-2 text-sm hover:text-primary transition-colors group"
               >
                 <Mail className="w-4 h-4" />
-                <span>contact@example.com</span>
+                <span>soukoku.app@gmail.com</span>
                 <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
             </div>
@@ -64,7 +64,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
             <div className="flex items-center gap-1">
               <span>Made with</span>
               <Heart className="w-3 h-3 text-red-500" />
-              <span>by SOUKOKU Team</span>
+              <span>by SOUKOKU</span>
             </div>
             <div>© 2025 SOUKOKU Compatibility Maker. All rights reserved.</div>
           </div>

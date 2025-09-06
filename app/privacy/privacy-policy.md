@@ -75,7 +75,7 @@ SOUKOKU（以下，「当運営者」といいます。）は，本ウェブサ�
 本ポリシーに関するお問い合わせは，下記の窓口までお願いいたします。
 
 運営者：SOUKOKU  
-X（旧Twitter）：[@your_account](https://x.com/your_account)  
-Eメールアドレス：[contact@example.com](mailto:contact@example.com)
+X（旧Twitter）：[@SOUKOKU_app](https://x.com/SOUKOKU_app)  
+Eメールアドレス：[soukoku.app@gmail.com](mailto:soukoku.app@gmail.com)
 
 以上
