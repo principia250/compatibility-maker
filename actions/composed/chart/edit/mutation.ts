@@ -19,7 +19,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('id', chartData.id);
 
         if (chartError) {
-            return { data: null, error: chartError };
+            console.error('Chart update error:', chartError);
+            return { data: null, error: { message: "Failed to update chart" } };
         }
 
         // 2. カテゴリ名の更新
@@ -29,7 +30,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('id', chartData.leftCategory.id);
 
         if (leftCategoryError) {
-            return { data: null, error: leftCategoryError };
+            console.error('Left category update error:', leftCategoryError);
+            return { data: null, error: { message: "Failed to update left category" } };
         }
 
         const { error: rightCategoryError } = await supabase
@@ -38,7 +40,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('id', chartData.rightCategory.id);
 
         if (rightCategoryError) {
-            return { data: null, error: rightCategoryError };
+            console.error('Right category update error:', rightCategoryError);
+            return { data: null, error: { message: "Failed to update right category" } };
         }
 
         // 3. 既存の要素を取得（削除対象の特定のため）
@@ -48,7 +51,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('element_category_id', chartData.leftCategory.id);
 
         if (leftElementsError) {
-            return { data: null, error: leftElementsError };
+            console.error('Left elements fetch error:', leftElementsError);
+            return { data: null, error: { message: "Failed to fetch left elements" } };
         }
 
         const { data: existingRightElements, error: rightElementsError } = await supabase
@@ -57,7 +61,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('element_category_id', chartData.rightCategory.id);
 
         if (rightElementsError) {
-            return { data: null, error: rightElementsError };
+            console.error('Right elements fetch error:', rightElementsError);
+            return { data: null, error: { message: "Failed to fetch right elements" } };
         }
 
         // 4. 左側要素の処理
@@ -76,7 +81,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                 .in('id', deletedLeftElementIds);
 
             if (deleteLeftError) {
-                return { data: null, error: deleteLeftError };
+                console.error('Delete left elements error:', deleteLeftError);
+                return { data: null, error: { message: "Failed to delete left elements" } };
             }
         }
 
@@ -96,7 +102,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                 .in('id', deletedRightElementIds);
 
             if (deleteRightError) {
-                return { data: null, error: deleteRightError };
+                console.error('Delete right elements error:', deleteRightError);
+                return { data: null, error: { message: "Failed to delete right elements" } };
             }
         }
 
@@ -116,7 +123,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                     .single();
 
                 if (insertError) {
-                    return { data: null, error: insertError };
+                    console.error('Insert left element error:', insertError);
+                    return { data: null, error: { message: "Failed to insert left element" } };
                 }
 
                 if (insertedElement) {
@@ -131,7 +139,7 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
 
                 if (updateError) {
                     console.error('Update left element error:', updateError);
-                    return { data: null, error: updateError };
+                    return { data: null, error: { message: "Failed to update left element" } };
                 }
             }
         }
@@ -149,7 +157,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                     .single();
 
                 if (insertError) {
-                    return { data: null, error: insertError };
+                    console.error('Insert right element error:', insertError);
+                    return { data: null, error: { message: "Failed to insert right element" } };
                 }
 
                 if (insertedElement) {
@@ -163,7 +172,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
                     .eq('id', element.id);
 
                 if (updateError) {
-                    return { data: null, error: updateError };
+                    console.error('Update right element error:', updateError);
+                    return { data: null, error: { message: "Failed to update right element" } };
                 }
             }
         }
@@ -176,7 +186,8 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
             .eq('chart_id', chartData.id);
 
         if (deleteCompatError) {
-            return { data: null, error: deleteCompatError };
+            console.error('Delete compatibilities error:', deleteCompatError);
+            return { data: null, error: { message: "Failed to delete compatibilities" } };
         }
 
         // 新しい相性データを挿入
@@ -202,7 +213,7 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
 
                 if (scoresError) {
                     console.error('Fetch compatibility scores error:', scoresError);
-                    return { data: null, error: scoresError };
+                    return { data: null, error: { message: "Failed to fetch compatibility scores" } };
                 }
 
                 // スコア値からIDへのマッピングを作成
@@ -230,7 +241,7 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
 
                     if (insertCompatError) {
                         console.error('Insert compatibilities error:', insertCompatError);
-                        return { data: null, error: insertCompatError };
+                        return { data: null, error: { message: "Failed to insert compatibilities" } };
                     }
                 }
             } else {
@@ -244,11 +255,13 @@ export const saveChartData = async (chartData: ChartEditData): Promise<Response<
         const { data: updatedChartData, error: fetchError } = await fetchChartEditData({ chartId: chartData.id });
         
         if (fetchError) {
-            return { data: null, error: fetchError };
+            console.error('Fetch updated chart data error:', fetchError);
+            return { data: null, error: { message: "Failed to fetch updated chart data" } };
         }
 
         return { data: updatedChartData, error: null };
     } catch (error) {
-        return { data: null, error: error as Error };
+        console.error('Unexpected error in saveChartData:', error);
+        return { data: null, error: { message: "Unexpected error occurred" } };
     }
 };

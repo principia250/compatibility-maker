@@ -25,10 +25,11 @@ export const fetchUserData = async (props: FetchUserData): Promise<Response<User
             .single();
 
         if (error) {
+            console.error('User data fetch error:', error);
             return {
                 data: null,
                 error: {
-                    message: 'ユーザー情報の取得に失敗しました'
+                    message: 'Failed to fetch user data'
                 }
             };
         }
@@ -37,7 +38,7 @@ export const fetchUserData = async (props: FetchUserData): Promise<Response<User
             return {
                 data: null,
                 error: {
-                    message: 'ユーザーが見つかりません'
+                    message: 'User not found'
                 }
             };
         }
@@ -51,10 +52,11 @@ export const fetchUserData = async (props: FetchUserData): Promise<Response<User
         };
         
     } catch (err) {
+        console.error('Unexpected error in fetchUserData:', err);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

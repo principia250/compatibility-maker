@@ -14,6 +14,7 @@ export async function duplicateChart({ chartId }: DuplicateChartParams): Promise
         // 認証チェック
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
+            console.error('Authentication error:', authError);
             return { data: null, error: { message: "Need authentication" } };
         }
 
@@ -67,6 +68,7 @@ export async function deleteChart({ chartId }: DeleteChartParams): Promise<Respo
             .single();
 
         if (userError || !userData) {
+            console.error('User not found:', userError);
             return { data: null, error: { message: "User not found" } };
         }
 
@@ -79,6 +81,7 @@ export async function deleteChart({ chartId }: DeleteChartParams): Promise<Respo
             .single();
 
         if (chartError || !chartData) {
+            console.error('Chart not found or access denied:', chartError);
             return { data: null, error: { message: "Chart not found or access denied" } };
         }
 
@@ -89,6 +92,7 @@ export async function deleteChart({ chartId }: DeleteChartParams): Promise<Respo
             .eq('id', chartId);
 
         if (deleteError) {
+            console.error('Failed to delete chart:', deleteError);
             return { data: null, error: { message: "Failed to delete chart" } };
         }
 

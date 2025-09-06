@@ -138,6 +138,7 @@ export const fetchChartDetailData = async (props: { chartId: string, loginUserId
         }
         
         if (chartError || bookmarkError || goodError) {
+            console.error('Chart detail fetch error:', { chartError, bookmarkError, goodError });
             return {
                 data: null,
                 error: {
@@ -234,10 +235,11 @@ export const fetchChartDetailData = async (props: { chartId: string, loginUserId
             error: null
         }
     } catch (error) {
+        console.error('Unexpected error in fetchChartDetailData:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

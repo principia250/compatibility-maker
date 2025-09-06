@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 import Loading from "@/components/loading";
 import { fetchMypageData, MypageData } from "@/actions/composed/mypage/fetch";
 import { duplicateChart, deleteChart } from "@/actions/composed/mypage/mutation";
@@ -23,6 +24,7 @@ export default function MypagePage() {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab") || "myChart";
   const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+  const { addError } = useError();
   const [mypageData, setMypageData] = useState<MypageData | null>(null)
   const [isDuplicating, setIsDuplicating] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
@@ -41,7 +43,8 @@ export default function MypagePage() {
         if (user?.id !== null && user?.id !== undefined && user?.id !== '') {
             const { data: mypageData, error: mypageError } = await fetchMypageData({ userId: user.id })
             if (mypageError) {
-                throw mypageError
+                addError(mypageError.message);
+                return;
             }
             setMypageData(mypageData)
         }
@@ -54,7 +57,7 @@ export default function MypagePage() {
     try {
       const result = await duplicateChart({ chartId }) as any;
       if (result.error) {
-        alert('Duplication failed: ' + result.error.message);
+        addError(result.error.message);
         return;
       }
       
@@ -63,7 +66,7 @@ export default function MypagePage() {
         router.push(`/chart/${result.data.newChartId}/edit`);
       }
     } catch (error) {
-      alert('Duplication failed');
+      addError('Duplication failed');
     } finally {
       setIsDuplicating(null);
     }
@@ -81,21 +84,22 @@ export default function MypagePage() {
     try {
       const result = await deleteChart({ chartId: chartToDelete.id }) as any;
       if (result.error) {
-        alert('Delete failed: ' + result.error.message);
+        addError(result.error.message);
         return;
       }
       
       // 削除成功時はデータを再取得
       const mypageData = await fetchMypageData({ userId: user.id });
       if (mypageData.error) {
-        throw mypageData.error;
+        addError(mypageData.error.message);
+        return;
       }
       setMypageData(mypageData.data);
       
       setDeleteDialogOpen(false);
       setChartToDelete(null);
     } catch (error) {
-      alert('Delete failed');
+      addError('Delete failed');
     } finally {
       setIsDeleting(null);
     }

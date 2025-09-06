@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 import Loading from "@/components/loading";
 import { fetchChartEditData, ChartEditData } from "@/actions/composed/chart/edit/fetch";
 import { saveChartData } from "@/actions/composed/chart/edit/mutation";
@@ -58,6 +59,7 @@ function isChartEditDataEqual(a: ChartEditData | null, b: ChartEditData | null):
 export default function ChartEditPage() {
     const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
     const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+    const { addError } = useError();
     const [data, setData] = useState<ChartEditData | null>(null)
     const initialDataRef = useRef<ChartEditData | null>(null);
     const [isSaving, setIsSaving] = useState(false);
@@ -79,15 +81,16 @@ export default function ChartEditPage() {
                 return;
             }
 
-            const { data: data, error: error } = await fetchChartEditData({ chartId: chartId })
-            if (error) {
-                throw error
-            }
-            
-            // 作成者チェック
-            if (data && data.userId !== user.id) {
-                redirect("/");
-            }
+        const { data: data, error: error } = await fetchChartEditData({ chartId: chartId })
+        if (error) {
+            addError(error.message);
+            return;
+        }
+        
+        // 作成者チェック
+        if (data && data.userId !== user.id) {
+            redirect("/");
+        }
             
             setData(data)
             if (initialDataRef.current === null) {
@@ -227,7 +230,7 @@ export default function ChartEditPage() {
         try {
             const { data: updatedData, error } = await saveChartData(data);
             if (error) {
-                // alert('保存に失敗しました: ' + error.message);
+                addError(error.message);
                 return;
             }
             
@@ -237,7 +240,7 @@ export default function ChartEditPage() {
                 initialDataRef.current = updatedData;
             }
         } catch (error) {
-            // alert('保存に失敗しました');
+            addError("Unexpected error occurred while saving");
         } finally {
             setIsSaving(false);
         }

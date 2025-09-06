@@ -268,11 +268,28 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                       <User className="w-4 h-4 mr-2" />
                       {isLoading ? '読み込み中...' : username}
                     </Button>
+                    <Link
+                      href="/mypage"
+                      className="block w-full px-3 py-2 text-sm text-left rounded-sm border border-transparent hover:border-white"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My page
+                    </Link>
+                    <Link
+                      href="/account"
+                      className="block w-full px-3 py-2 text-sm text-left rounded-sm border border-transparent hover:border-white"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Account
+                    </Link>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       className="w-full justify-start mt-2"
-                      onClick={logout}
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
                       disabled={isLoading}
                     >
                       <LogOut className="w-4 h-4 mr-2" />

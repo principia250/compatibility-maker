@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createChart } from "@/actions/core/chart/mutation";
 import { Plus } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 
 interface CreateChartProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
   const { user } = useUser();
+  const { addError } = useError();
 
   const handleCancel = () => {
     // 入力を初期化
@@ -44,8 +46,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
       });
 
       if (error) {
-        console.error('Chart creation error:', error);
-        // エラーハンドリング（必要に応じてトースト表示など）
+        addError(error);
         return;
       }
 
@@ -59,7 +60,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
         router.push(`/chart/${data.id}/edit`);
       }
     } catch (error) {
-      console.error('Unexpected error:', error);
+      addError("Unexpected error occurred while creating chart");
     } finally {
       setIsCreating(false);
     }

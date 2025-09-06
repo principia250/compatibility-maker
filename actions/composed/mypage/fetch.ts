@@ -71,10 +71,11 @@ export const fetchMypageData = async (props: MypageDataParams): Promise<Response
         const { data: userData, error: userError } = userResult;
         
         if (bookmarksError || chartsError || userError) {
+            console.error('Mypage data fetch error:', { bookmarksError, chartsError, userError });
             return {
                 data: null,
                 error: {
-                    message: 'データの取得に失敗しました'
+                    message: 'Failed to fetch mypage data'
                 }
             };
         }
@@ -106,10 +107,11 @@ export const fetchMypageData = async (props: MypageDataParams): Promise<Response
             error: null
         }
     } catch (error) {
+        console.error('Unexpected error in fetchMypageData:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

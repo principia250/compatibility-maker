@@ -24,10 +24,11 @@ export const fetchCompatibilityScoreData = async (): Promise<Response<Compatibil
         const { data: data, error: error } = result;
         
         if (error) {
+            console.error('Compatibility scores fetch error:', error);
             return {
                 data: null,
                 error: {
-                    message: 'データの取得に失敗しました'
+                    message: 'Failed to fetch compatibility scores'
                 }
             };
         }
@@ -43,10 +44,11 @@ export const fetchCompatibilityScoreData = async (): Promise<Response<Compatibil
             error: null
         }
     } catch (error) {
+        console.error('Unexpected error in fetchCompatibilityScoreData:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

@@ -46,7 +46,7 @@ export const fetchChartComments = async (props: { chartId: string }): Promise<Re
             return {
                 data: null,
                 error: {
-                    message: 'チャート情報の取得に失敗しました'
+                    message: 'Failed to fetch chart information'
                 }
             };
         }
@@ -71,7 +71,7 @@ export const fetchChartComments = async (props: { chartId: string }): Promise<Re
             return {
                 data: null,
                 error: {
-                    message: 'コメントの取得に失敗しました'
+                    message: 'Failed to fetch comments'
                 }
             };
         }
@@ -99,11 +99,11 @@ export const fetchChartComments = async (props: { chartId: string }): Promise<Re
             error: null
         };
     } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('Unexpected error in fetchChartComments:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }

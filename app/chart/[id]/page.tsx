@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 import Loading from "@/components/loading";
 import { useParams } from "next/navigation";
 import { fetchChartDetailData, ChartDetailData } from "@/actions/composed/chart-detail/fetch";
@@ -18,6 +19,7 @@ import { CommentCard } from "@/components/ui/comment-card";
 export default function ChartDetailPage() {
     const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
     const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
+    const { addError } = useError();
     const params = useParams<{ id: string }>();
     const chartId = params?.id;
     const [data, setData] = useState<ChartDetailData | null>(null)
@@ -47,7 +49,8 @@ export default function ChartDetailPage() {
                 chartId: chartId
             })
             if (error) {
-                throw error
+                addError(error.message);
+                return;
             }
             setData(data)
         }
@@ -71,8 +74,7 @@ export default function ChartDetailPage() {
             });
 
             if (error) {
-                console.error('Comment submission error:', error);
-                // エラーハンドリング（必要に応じてトースト表示など）
+                addError(error.message);
                 return;
             }
 
@@ -90,7 +92,7 @@ export default function ChartDetailPage() {
                 }
             }
         } catch (error) {
-            console.error('Unexpected error:', error);
+            addError("Unexpected error occurred while submitting comment");
         } finally {
             setIsSubmitting(false);
         }
@@ -114,7 +116,7 @@ export default function ChartDetailPage() {
             });
 
             if (error) {
-                console.error('Bookmark toggle error:', error);
+                addError(error.message);
                 // エラーの場合、楽観的更新を元に戻す
                 setOptimisticBookmark(null);
                 return;
@@ -134,7 +136,7 @@ export default function ChartDetailPage() {
                 }
             }
         } catch (error) {
-            console.error('Unexpected error:', error);
+            addError("Unexpected error occurred while toggling bookmark");
             // エラーの場合、楽観的更新を元に戻す
             setOptimisticBookmark(null);
         } finally {
@@ -160,7 +162,7 @@ export default function ChartDetailPage() {
             });
 
             if (error) {
-                console.error('Good toggle error:', error);
+                addError(error.message);
                 // エラーの場合、楽観的更新を元に戻す
                 setOptimisticGood(null);
                 return;
@@ -180,7 +182,7 @@ export default function ChartDetailPage() {
                 }
             }
         } catch (error) {
-            console.error('Unexpected error:', error);
+            addError("Unexpected error occurred while toggling good");
             // エラーの場合、楽観的更新を元に戻す
             setOptimisticGood(null);
         } finally {

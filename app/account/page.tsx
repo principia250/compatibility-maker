@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ import { useTranslation } from '@/lib/i18n';
 
 export default function AccountPage() {
     const { user, username, fetchUser, logout, updateUsername, isLoading, isAuthenticated } = useUser();
+    const { addError } = useError();
     const [newUsername, setNewUsername] = useState(username || "");
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -48,14 +50,14 @@ export default function AccountPage() {
         try {
             const result = await updateUsernameAction({ username: newUsername.trim() }) as any;
             if (result && result.error) {
-                setError(result.error.message);
+                addError(result.error.message);
                 return;
             }
 
             setSuccess("Username updated");
             updateUsername(newUsername.trim()); // storeを直接更新
         } catch (err) {
-            setError("Failed to update username");
+            addError("Failed to update username");
         } finally {
             setIsUpdating(false);
         }
@@ -68,7 +70,7 @@ export default function AccountPage() {
         try {
             const { error } = await deleteAccount();
             if (error) {
-                setError(error.message);
+                addError(error.message);
                 return;
             }
 
@@ -76,7 +78,7 @@ export default function AccountPage() {
             await logout();
             router.push("/");
         } catch (err) {
-            setError("Failed to delete account");
+            addError("Failed to delete account");
         } finally {
             setIsDeleting(false);
         }

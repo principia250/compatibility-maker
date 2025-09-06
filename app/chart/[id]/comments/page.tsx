@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
+import { useError } from "@/hooks/use-error";
 import Loading from "@/components/loading";
 import { useParams } from "next/navigation";
 import { fetchChartComments, ChartCommentsData } from "@/actions/composed/chart-detail/comments/fetch";
@@ -12,6 +13,7 @@ import { CommentCard } from "@/components/ui/comment-card";
 
 export default function ChartCommentsPage() {
     const { user, isLoading, isAuthenticated } = useUser();
+    const { addError } = useError();
     const params = useParams<{ id: string }>();
     const chartId = params?.id;
     const [data, setData] = useState<ChartCommentsData | null>(null);
@@ -23,7 +25,8 @@ export default function ChartCommentsPage() {
             }
             const { data: data, error: error } = await fetchChartComments({ chartId: chartId });
             if (error) {
-                throw error;
+                addError(error.message);
+                return;
             }
             setData(data);
         };

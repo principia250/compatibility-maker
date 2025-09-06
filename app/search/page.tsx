@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useError } from '@/hooks/use-error';
 import { searchCharts, SearchParams, SearchResponse } from '@/actions/composed/search/fetch';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import Link from 'next/link';
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { addError } = useError();
     
     // 検索条件の状態
     const [query, setQuery] = useState(searchParams.get('q') || '');
@@ -41,7 +43,6 @@ export default function SearchPage() {
     // 検索結果の状態
     const [searchData, setSearchData] = useState<SearchResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     
     // 初期表示時にクエリパラメータに基づいて検索実行
     useEffect(() => {
@@ -49,7 +50,6 @@ export default function SearchPage() {
             // クエリパラメータに検索条件がある場合のみ検索実行
             if (query || searchParams.get('q')) {
                 setIsLoading(true);
-                setError(null);
                 
                 try {
                     const params: SearchParams = {
@@ -64,13 +64,13 @@ export default function SearchPage() {
                     const result = await searchCharts(params);
                     
                     if (result.error) {
-                        setError(result.error.message);
+                        addError(result.error.message);
                         setSearchData(null);
                     } else if (result.data) {
                         setSearchData(result.data);
                     }
                 } catch (err) {
-                    setError('検索中にエラーが発生しました');
+                    addError('Search error occurred');
                     setSearchData(null);
                 } finally {
                     setIsLoading(false);
@@ -98,7 +98,6 @@ export default function SearchPage() {
     const handleSearch = async () => {
         setCurrentPage(1); // 検索時は1ページ目に戻す
         setIsLoading(true);
-        setError(null);
         
         try {
             const params: SearchParams = {
@@ -113,13 +112,13 @@ export default function SearchPage() {
             const result = await searchCharts(params);
             
             if (result.error) {
-                setError(result.error.message);
+                addError(result.error.message);
                 setSearchData(null);
             } else if (result.data) {
                 setSearchData(result.data);
             }
         } catch (err) {
-            setError('検索中にエラーが発生しました');
+            addError('Search error occurred');
             setSearchData(null);
         } finally {
             setIsLoading(false);
@@ -135,7 +134,6 @@ export default function SearchPage() {
         
         // 検索を実行
         setIsLoading(true);
-        setError(null);
         
         try {
             const params: SearchParams = {
@@ -150,13 +148,13 @@ export default function SearchPage() {
             const result = await searchCharts(params);
             
             if (result.error) {
-                setError(result.error.message);
+                addError(result.error.message);
                 setSearchData(null);
             } else if (result.data) {
                 setSearchData(result.data);
             }
         } catch (err) {
-            setError('検索中にエラーが発生しました');
+            addError('Search error occurred');
             setSearchData(null);
         } finally {
             setIsLoading(false);
@@ -270,12 +268,6 @@ export default function SearchPage() {
                 </div>
             </div>
             
-            {/* エラー表示 */}
-            {error && (
-                <div className="mb-4 p-4 bg-red-900/20 border border-red-600/30 rounded-lg text-red-200">
-                    {error}
-                </div>
-            )}
             
             {/* 検索結果 */}
             {isLoading ? (

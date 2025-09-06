@@ -90,7 +90,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
             .single();
         
         if (chartError) {
-            console.error(chartError);
+            console.error('Chart fetch error:', chartError);
             return {
                 data: null,
                 error: {
@@ -174,6 +174,7 @@ export const fetchChartEditData = async (props: { chartId: string }): Promise<Re
             error: null
         }
     } catch (error) {
+        console.error('Unexpected error in fetchChartEditData:', error);
         return {
             data: null,
             error: {

@@ -61,7 +61,7 @@ export const addComment = async (props: AddCommentParams): Promise<Response<AddC
             return {
                 data: null,
                 error: {
-                    message: 'コメントの投稿に失敗しました'
+                    message: 'Failed to post comment'
                 }
             };
         }
@@ -77,11 +77,11 @@ export const addComment = async (props: AddCommentParams): Promise<Response<AddC
             error: null
         };
     } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('Unexpected error in addComment:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }
@@ -104,7 +104,7 @@ export const toggleBookmark = async (props: ToggleBookmarkParams): Promise<Respo
             return {
                 data: null,
                 error: {
-                    message: 'ブックマークの確認に失敗しました'
+                    message: 'Failed to check bookmark status'
                 }
             };
         }
@@ -121,7 +121,7 @@ export const toggleBookmark = async (props: ToggleBookmarkParams): Promise<Respo
                 return {
                     data: null,
                     error: {
-                        message: 'ブックマークの削除に失敗しました'
+                        message: 'Failed to remove bookmark'
                     }
                 };
             }
@@ -144,7 +144,7 @@ export const toggleBookmark = async (props: ToggleBookmarkParams): Promise<Respo
                 return {
                     data: null,
                     error: {
-                        message: 'ブックマークの追加に失敗しました'
+                        message: 'Failed to add bookmark'
                     }
                 };
             }
@@ -155,11 +155,11 @@ export const toggleBookmark = async (props: ToggleBookmarkParams): Promise<Respo
             };
         }
     } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('Unexpected error in toggleBookmark:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }
@@ -182,7 +182,7 @@ export const toggleGood = async (props: ToggleGoodParams): Promise<Response<Togg
             return {
                 data: null,
                 error: {
-                    message: 'グッドの確認に失敗しました'
+                    message: 'Failed to check good status'
                 }
             };
         }
@@ -199,7 +199,7 @@ export const toggleGood = async (props: ToggleGoodParams): Promise<Response<Togg
                 return {
                     data: null,
                     error: {
-                        message: 'グッドの削除に失敗しました'
+                        message: 'Failed to remove good'
                     }
                 };
             }
@@ -222,7 +222,7 @@ export const toggleGood = async (props: ToggleGoodParams): Promise<Response<Togg
                 return {
                     data: null,
                     error: {
-                        message: 'グッドの追加に失敗しました'
+                        message: 'Failed to add good'
                     }
                 };
             }
@@ -233,11 +233,11 @@ export const toggleGood = async (props: ToggleGoodParams): Promise<Response<Togg
             };
         }
     } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('Unexpected error in toggleGood:', error);
         return {
             data: null,
             error: {
-                message: '予期しないエラーが発生しました'
+                message: 'Unexpected error occurred'
             }
         };
     }
