@@ -1,0 +1,42 @@
+'use server'
+
+import { createClient } from "@/lib/supabase/server";
+import { Response } from "@/actions/types/response";
+
+export interface Data {
+}
+
+export const fetchData = async (props: {}): Promise<Response<Data>> => {
+    const supabase = await createClient();
+
+    try {
+        // fetch処理を並列実行
+        const [] = await Promise.all([
+            
+        ]);
+
+        const { data: Data, error: Error } = Result;
+        
+        if (Error) {
+            return {
+                data: null,
+                error: {
+                    message: 'データの取得に失敗しました'
+                }
+            };
+        }
+
+        return {
+            data: {
+            },
+            error: null
+        }
+    } catch (error) {
+        return {
+            data: null,
+            error: {
+                message: '予期しないエラーが発生しました'
+            }
+        };
+    }
+}
