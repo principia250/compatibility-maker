@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@/hooks/use-user';
 import { useError } from '@/hooks/use-error';
 import Loading from '@/components/loading';
@@ -28,7 +28,7 @@ import {
 import { useTranslation } from '@/lib/i18n';
 import { Response } from '@/actions/types/response';
 
-export default function MypagePage() {
+function MypageContent() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true);
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'myChart';
@@ -282,5 +282,13 @@ export default function MypagePage() {
         isDeleting={isDeleting === chartToDelete?.id}
       />
     </>
+  );
+}
+
+export default function MypagePage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <MypageContent />
+    </Suspense>
   );
 }

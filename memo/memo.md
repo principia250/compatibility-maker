@@ -5,10 +5,10 @@ supabase gen types typescript --project-id <project-id> > database.types.ts
 
 ## Phase1 初期リリース
 
-- vercelとsupabaseの連携
-- supabaseのproプラン契約
-- SMTPサーバーの設定
-- ドメインの購入及び設定
+- 未 vercelとsupabaseの連携
+- 済 supabaseのproプラン契約
+- 未 SMTPサーバーの設定
+- 未 ドメインの購入及び設定
 
 ## Phase2 広告導入
 

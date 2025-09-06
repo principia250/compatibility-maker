@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useError } from '@/hooks/use-error';
 import {
@@ -28,8 +28,9 @@ import {
   ArrowDownZa,
 } from 'lucide-react';
 import Link from 'next/link';
+import Loading from '@/components/loading';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addError } = useError();
@@ -382,5 +383,13 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SearchContent />
+    </Suspense>
   );
 }
