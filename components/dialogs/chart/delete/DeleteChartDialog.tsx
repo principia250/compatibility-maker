@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface DeleteChartDialogProps {
   open: boolean;
@@ -19,6 +20,7 @@ export function DeleteChartDialog({
   onConfirm,
   isDeleting = false
 }: DeleteChartDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -28,7 +30,10 @@ export function DeleteChartDialog({
             Delete Chart
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "{chartTitle}"? This action cannot be undone.
+            {t(
+              `本当に"${chartTitle}"を削除しますか？ この操作は取り消せません。`,
+              `Are you sure you want to delete "${chartTitle}"? This action cannot be undone.`
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -18,6 +18,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/lib/i18n";
 
 export default function MypagePage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
@@ -31,7 +32,7 @@ export default function MypagePage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [chartToDelete, setChartToDelete] = useState<{ id: string; title: string } | null>(null)
   const router = useRouter();
-
+  const { t } = useTranslation();
   useEffect(() => {
     if(isLoading || user) {
         setIsLoadingState(false)
@@ -134,7 +135,7 @@ export default function MypagePage() {
                         </CreateChartDialog>
                         :
                         <span className="text-red-600">
-                            You have reached the maximum number of charts you can create.
+                            {t("相性図を作成できる最大数に達しています。", "You have reached the maximum number of charts you can create.")}
                         </span>
                     }
                     {
@@ -181,7 +182,7 @@ export default function MypagePage() {
                                                 <MoreVertical className="w-4 h-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
+                                        <DropdownMenuContent align="end" className="border-white">
                                             <DropdownMenuItem asChild>
                                                 <Link href={`/chart/${chart.id}/edit`} className="flex items-center gap-2">
                                                     <Pencil className="w-4 h-4" />

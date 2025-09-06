@@ -11,6 +11,7 @@ import { createChart } from "@/actions/core/chart/mutation";
 import { Plus } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
 import { useError } from "@/hooks/use-error";
+import { useTranslation } from "@/lib/i18n";
 
 interface CreateChartProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
   const router = useRouter();
   const { user } = useUser();
   const { addError } = useError();
-
+  const { t } = useTranslation();
   const handleCancel = () => {
     // 入力を初期化
     setTitle("");
@@ -74,7 +75,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Make New Chart
+            Create New Chart
           </DialogTitle>
         </DialogHeader>
         
@@ -93,15 +94,15 @@ export function CreateChartDialog({ children }: CreateChartProps) {
 
           {/* 公開設定 */}
           <div className="flex flex-col gap-3">
-            <Label>Visibility</Label>
+            <Label>{t("公開設定", "Visibility")}</Label>
             <RadioGroup value={isPublic ? "public" : "private"} onValueChange={(value: string) => setIsPublic(value === "public")}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="public" id="public" />
-                <Label htmlFor="public">Public (Anyone can view)</Label>
+                <Label htmlFor="public">{`Public (${t("誰でも閲覧可能", "Anyone can view")})`}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="private" id="private" />
-                <Label htmlFor="private">Private (Only you can view)</Label>
+                <Label htmlFor="private">{`Private (${t("自分のみ閲覧可能", "Only you can view")})`}</Label>
               </div>
             </RadioGroup>
           </div>

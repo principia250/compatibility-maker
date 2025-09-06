@@ -36,7 +36,7 @@ export default function HomePage() {
             <h1 className="text-3xl font-bold text-primary">
               SOUKOKU
             </h1>
-            <div className="text-xl">Compatibility Maker</div>
+            <div className="text-xl">{t("相性メーカー","Compatibility Maker")}</div>
           </div>
         </div>
       </div>

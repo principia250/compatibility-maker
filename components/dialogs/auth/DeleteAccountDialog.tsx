@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n";
 
 interface DeleteAccountDialogProps {
     isDeleting: boolean;
@@ -11,7 +12,7 @@ interface DeleteAccountDialogProps {
 
 export function DeleteAccountDialog({ isDeleting, onDelete }: DeleteAccountDialogProps) {
     const [open, setOpen] = useState(false);
-
+    const { t } = useTranslation();
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -23,7 +24,7 @@ export function DeleteAccountDialog({ isDeleting, onDelete }: DeleteAccountDialo
                 <DialogHeader>
                     <DialogTitle>Delete account?</DialogTitle>
                     <DialogDescription>
-                        This operation cannot be cancelled. Your account and all associated data will be permanently deleted.
+                        {t("この操作はキャンセルできません。アカウントと関連するデータが永久に削除されます。", "This operation cannot be cancelled. Your account and all associated data will be permanently deleted.")}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

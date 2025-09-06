@@ -17,6 +17,7 @@ import {
 import { useUser } from '@/hooks/use-user';
 import { useLanguage } from '@/hooks/use-language';
 import clsx from 'clsx';
+import { useTranslation } from "@/lib/i18n";
 
 export interface HeaderProps {
   className?: string;
@@ -33,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   
   // 言語設定を取得
   const { language, changeLanguage } = useLanguage();
-
+  const { t } = useTranslation();
   // クライアントサイドでのみ実行されることを保証
   useEffect(() => {
     setIsClient(true);
@@ -107,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               />
               <div>
                 <div className="text-lg sm:text-xl font-bold text-primary">SOUKOKU</div>
-                <div className="text-sm hidden sm:block">Compatibility Maker</div>
+                <div className="text-sm hidden sm:block">{t("相性メーカー","Compatibility Maker")}</div>
               </div>
             </Link>
             <div className="text-sm bg-red-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">Alpha</div>

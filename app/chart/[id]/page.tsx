@@ -15,8 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, ThumbsUp } from "lucide-react";
 import { clsx } from "clsx";
 import { CommentCard } from "@/components/ui/comment-card";
+import { useTranslation } from "@/lib/i18n";
 
 export default function ChartDetailPage() {
+    const { t } = useTranslation();
     const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
     const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
     const { addError } = useError();
@@ -200,12 +202,12 @@ export default function ChartDetailPage() {
         <div className="flex flex-col gap-2">
             <div className="text-2xl font-bold">{data.title}</div>
             <div className="text-sm">by {data.user.username}</div>
-            <div className="text-sm">{data.isPublic || "This chart is private."}</div>
+            <div className="text-sm">{data.isPublic || t("この図は非公開です。", "This chart is private.")}</div>
         </div>
         {/* 図の見方 */}
         <div className="w-full flex justify-end">
             <CustomLink href="/how-to-use">
-                How to read this chart?
+                {t("この図の見方", "How to read this chart?")}
             </CustomLink>
         </div>
         {/* 凡例 */}
@@ -258,11 +260,11 @@ export default function ChartDetailPage() {
                 </>
             ) : (
                 <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>Please</span>
+                    <span>{t("","Please")}</span>
                     <CustomLink href="/auth/login" className="text-primary hover:text-primary/80 underline">
-                        log in
+                        {t("ログイン", "log in")}
                     </CustomLink>
-                    <span>to bookmark or like this chart</span>
+                    <span>{t("してブックマーク", "to bookmark or like this chart")}</span>
                 </div>
             )}
         </div>
@@ -293,11 +295,11 @@ export default function ChartDetailPage() {
                 </>
             ) : (
                 <div className="flex items-center gap-2 text-sm text-gray-400 py-4">
-                    <span>Please</span>
+                    <span>{t("","Please")}</span>
                     <CustomLink href="/auth/login" className="text-primary hover:text-primary/80 underline">
-                        log in
+                        {t("ログイン", "log in")}
                     </CustomLink>
-                    <span>to post a comment</span>
+                    <span>{t("してコメントを投稿", "to post a comment")}</span>
                 </div>
             )}
             

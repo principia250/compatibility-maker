@@ -14,6 +14,7 @@ import NodeAndEdge from "@/components/NodeAndEdge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTranslation } from "@/lib/i18n";
 
 // 深い比較: ChartEditDataの等価性を判定
 function isChartEditDataEqual(a: ChartEditData | null, b: ChartEditData | null): boolean {
@@ -58,6 +59,7 @@ function isChartEditDataEqual(a: ChartEditData | null, b: ChartEditData | null):
 
 export default function ChartEditPage() {
     const [isLoadingState, setIsLoadingState] = useState<boolean>(true)
+    const { t } = useTranslation();
     const { user, isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
     const { addError } = useError();
     const [data, setData] = useState<ChartEditData | null>(null)
@@ -266,7 +268,7 @@ export default function ChartEditPage() {
                     >
                         {isSaving ? 'Saving...' : 'Save'}
                     </Button>
-                    {`(=´ー｀)ノ Don't forget to save!`}
+                    {t("(=´ー｀)ノ 保存をお忘れなく！", "(=´ー｀)ノ Don't forget to save!")}
                 </>)
             }
         </div>
@@ -298,11 +300,11 @@ export default function ChartEditPage() {
         >
             <div className="flex items-center space-x-2">
                 <RadioGroupItem value="public" id="public" />
-                <Label htmlFor="public">Public (Anyone can view)</Label>
+                <Label htmlFor="public">{`Public (${t("誰でも閲覧可能", "Anyone can view")})`}</Label>
             </div>
             <div className="flex items-center space-x-2">
                 <RadioGroupItem value="private" id="private" />
-                <Label htmlFor="private">Private (Only you can view)</Label>
+                <Label htmlFor="private">{`Private (${t("自分のみ閲覧可能", "Only you can view")})`}</Label>
             </div>
         </RadioGroup>
         {/* 凡例 */}

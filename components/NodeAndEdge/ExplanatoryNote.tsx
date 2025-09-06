@@ -1,8 +1,13 @@
+'use client';
+
 import { COMPABILITY_NOTATION } from "@/constants/compability-notation";
 import { COMPABILITY_COLOR } from "@/constants/compability-color";
 import { Arrow } from "./Arrow";
+import { useTranslation } from "@/lib/i18n";
 
 export const ExplanatoryNote = () => {
+    const { t } = useTranslation();
+
     const drawArrow = (compatibilityScore: number) => {
         return (
             <div className="flex flex-row items-center gap-2">
@@ -25,14 +30,14 @@ export const ExplanatoryNote = () => {
                     length={50} 
                     angle={0} 
                     color={"#FFFFFF"} 
-                    note="Notes will be displayed here."
+                    note={t("備考はここに表示されます。", "Notes will be displayed here.")}
                     leftElementName="item 1"
                     rightElementName="item 2"
                     score={0}
                     scoreNotation="0"
                 />
                 <div>
-                    Click thick arrows to view notes
+                    {t("太い矢印をクリックして備考を表示", "Click thick arrows to view notes")}
                 </div>
             </div>
         )
