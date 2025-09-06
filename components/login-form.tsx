@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import CustomLink from "@/components/CustomLink";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useUser } from "@/hooks/use-user";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import CustomLink from '@/components/CustomLink';
+import { useState } from 'react';
+import { useUser } from '@/hooks/use-user';
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+}: React.ComponentPropsWithoutRef<'div'>) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { fetchUser } = useUser();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,21 +38,21 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      
+
       // ユーザー情報を取得してストアに保存
       await fetchUser();
-      
+
       // ホームページにリダイレクト（ページ全体をリロードして確実に状態を更新）
-      window.location.href = "/";
+      window.location.href = '/';
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
@@ -96,11 +94,11 @@ export function LoginForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Don&apos;t have an account?{' '}
               <CustomLink
                 href="/auth/sign-up"
                 className="underline underline-offset-4"

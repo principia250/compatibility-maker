@@ -12,7 +12,7 @@ interface UserState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
@@ -29,9 +29,9 @@ export const useUserStore = create<UserState>()((set, get) => ({
   error: null,
 
   setUser: (user) => set({ user, error: null }),
-  
+
   setLoading: (isLoading) => set({ isLoading }),
-  
+
   setError: (error) => set({ error, isLoading: false }),
 
   fetchUser: async () => {
@@ -39,7 +39,10 @@ export const useUserStore = create<UserState>()((set, get) => ({
 
     try {
       const supabase = createClient();
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
 
       if (authError) {
         // 認証エラーの場合はログインしていない状態として扱う
@@ -66,37 +69,40 @@ export const useUserStore = create<UserState>()((set, get) => ({
       const user: User = {
         id: userData.data?.id || '',
         authUserId: authUser.id,
-        username: userData.data?.username || ''
+        username: userData.data?.username || '',
       };
 
       set({ user, isLoading: false, error: null });
-
     } catch (error) {
       // 予期しないエラーの場合のみエラーとして扱う
       console.error('予期しないエラー:', error);
-      set({ 
-        user: null, 
-        isLoading: false, 
-        error: error instanceof Error ? error.message : 'ユーザー情報の取得に失敗しました'
+      set({
+        user: null,
+        isLoading: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'ユーザー情報の取得に失敗しました',
       });
     }
   },
 
   logout: async () => {
     set({ isLoading: true });
-    
+
     try {
       const supabase = createClient();
       await supabase.auth.signOut();
       set({ user: null, isLoading: false, error: null });
-      
+
       // ページをリロードしてホームに遷移
       window.location.href = '/';
     } catch (error) {
       console.error('ログアウトエラー:', error);
-      set({ 
-        isLoading: false, 
-        error: error instanceof Error ? error.message : 'ログアウトに失敗しました'
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : 'ログアウトに失敗しました',
       });
     }
   },
@@ -106,10 +112,10 @@ export const useUserStore = create<UserState>()((set, get) => ({
   updateUsername: (newUsername: string) => {
     const { user } = get();
     if (user) {
-      set({ 
+      set({
         user: { ...user, username: newUsername },
-        error: null 
+        error: null,
       });
     }
-  }
+  },
 }));

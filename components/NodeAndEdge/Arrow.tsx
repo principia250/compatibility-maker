@@ -15,7 +15,17 @@ export interface ArrowProps {
   scoreNotation?: string;
 }
 
-export const Arrow = ({ className, length, angle, color, note, leftElementName, rightElementName, score, scoreNotation }: ArrowProps) => {
+export const Arrow = ({
+  className,
+  length,
+  angle,
+  color,
+  note,
+  leftElementName,
+  rightElementName,
+  score,
+  scoreNotation,
+}: ArrowProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleClick = () => {
@@ -26,11 +36,11 @@ export const Arrow = ({ className, length, angle, color, note, leftElementName, 
 
   return (
     <>
-      <div 
+      <div
         className={clsx(
           `relative group`,
-          note ? "h-[4px] cursor-pointer" : "h-[1px]",
-          className,
+          note ? 'h-[4px] cursor-pointer' : 'h-[1px]',
+          className
         )}
         style={{
           width: `${length}px`,
@@ -39,17 +49,19 @@ export const Arrow = ({ className, length, angle, color, note, leftElementName, 
         }}
         onClick={handleClick}
       >
-        <div 
-          className={clsx("w-[10px] rotate-[-45deg] absolute top-[4px]",
-            note ? "h-[4px] right-[0px] cursor-pointer" : "h-[1px] right-[-1px]",
+        <div
+          className={clsx(
+            'w-[10px] rotate-[-45deg] absolute top-[4px]',
+            note ? 'h-[4px] right-[0px] cursor-pointer' : 'h-[1px] right-[-1px]'
           )}
           style={{
             backgroundColor: color,
           }}
         ></div>
-        <div 
-          className={clsx("w-[10px] rotate-[45deg] absolute top-[-4px]",
-            note ? "h-[4px] right-[0px] cursor-pointer" : "h-[1px] right-[-1px]",
+        <div
+          className={clsx(
+            'w-[10px] rotate-[45deg] absolute top-[-4px]',
+            note ? 'h-[4px] right-[0px] cursor-pointer' : 'h-[1px] right-[-1px]'
           )}
           style={{
             backgroundColor: color,
@@ -70,5 +82,5 @@ export const Arrow = ({ className, length, angle, color, note, leftElementName, 
         />
       )}
     </>
-  )
-}
+  );
+};

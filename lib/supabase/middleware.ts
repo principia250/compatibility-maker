@@ -1,6 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
-import { hasEnvVars } from "../utils";
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+import { hasEnvVars } from '../utils';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -25,17 +25,17 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
+            request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
+            supabaseResponse.cookies.set(name, value, options)
           );
         },
       },
-    },
+    }
   );
 
   // Do not run code between createServerClient and
@@ -48,27 +48,29 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   // チャート編集ページかどうかをチェック
-  const isChartEditPage = request.nextUrl.pathname.match(/^\/chart\/[^\/]+\/edit/);
-  
-  // 未ログインユーザーがアクセスできない条件
-  const shouldRedirect = !user && (
-    // チャート編集ページにアクセスしている
-    isChartEditPage ||
-    // その他の認証が必要なパス（ホームページ以外）
-    (request.nextUrl.pathname !== "/" && 
-     !request.nextUrl.pathname.startsWith("/login") &&
-     !request.nextUrl.pathname.startsWith("/auth") &&
-     !request.nextUrl.pathname.startsWith("/chart/") &&
-     !request.nextUrl.pathname.startsWith("/search") &&
-     !request.nextUrl.pathname.startsWith("/privacy") &&
-     !request.nextUrl.pathname.startsWith("/guidelines") &&
-     !request.nextUrl.pathname.startsWith("/how-to-use"))
+  const isChartEditPage = request.nextUrl.pathname.match(
+    /^\/chart\/[^\/]+\/edit/
   );
+
+  // 未ログインユーザーがアクセスできない条件
+  const shouldRedirect =
+    !user &&
+    // チャート編集ページにアクセスしている
+    (isChartEditPage ||
+      // その他の認証が必要なパス（ホームページ以外）
+      (request.nextUrl.pathname !== '/' &&
+        !request.nextUrl.pathname.startsWith('/login') &&
+        !request.nextUrl.pathname.startsWith('/auth') &&
+        !request.nextUrl.pathname.startsWith('/chart/') &&
+        !request.nextUrl.pathname.startsWith('/search') &&
+        !request.nextUrl.pathname.startsWith('/privacy') &&
+        !request.nextUrl.pathname.startsWith('/guidelines') &&
+        !request.nextUrl.pathname.startsWith('/how-to-use')));
 
   if (shouldRedirect) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = '/auth/login';
     return NextResponse.redirect(url);
   }
 

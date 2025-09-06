@@ -8,7 +8,5 @@ export default function GuidelinesPage() {
   const markdownPath = path.join(process.cwd(), 'app/guidelines/guidelines.md');
   const markdownContent = fs.readFileSync(markdownPath, 'utf8');
 
-  return (
-    <MarkdownRenderer content={markdownContent} />
-  );
+  return <MarkdownRenderer content={markdownContent} />;
 }

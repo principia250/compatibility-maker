@@ -1,42 +1,37 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-primary/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-black hover:bg-primary/80",
-        deactive:
-          "bg-neutral-500 text-white hover:bg-neutral-500/80",
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/80",
-        positive:
-          "bg-positive text-white hover:bg-positive/80",
-        outline:
-          "border border-white",
+        default: 'bg-primary text-black hover:bg-primary/80',
+        deactive: 'bg-neutral-500 text-white hover:bg-neutral-500/80',
+        destructive: 'bg-destructive text-white hover:bg-destructive/80',
+        positive: 'bg-positive text-white hover:bg-positive/80',
+        outline: 'border border-white',
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary hover:text-primary/80",
+          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        link: 'text-primary hover:text-primary/80',
       },
       size: {
-        default: "h-10 px-4 text-sm sm:text-base",
-        sm: "h-8 px-3 text-sm sm:text-base",
-        xs: "h-4 px-2 text-sm"
+        default: 'h-10 px-4 text-sm sm:text-base',
+        sm: 'h-8 px-3 text-sm sm:text-base',
+        xs: 'h-4 px-2 text-sm',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: 'default',
+      size: 'default',
     },
   }
-)
+);
 
 function Button({
   className,
@@ -44,11 +39,11 @@ function Button({
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<"button"> &
+}: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
+    asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : 'button';
 
   return (
     <Comp
@@ -56,7 +51,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

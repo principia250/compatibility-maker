@@ -4,39 +4,39 @@
 
 @layer base {
   :root {
-    --primary: 255 165 0;  /* #ffa500 */
-    --primary-foreground: 255 255 255;  /* 白 */
+    --primary: 255 165 0; /* #ffa500 */
+    --primary-foreground: 255 255 255; /* 白 */
 
-    --background: 31 31 31;  /* #1f1f1f */
-    --foreground: 255 255 255;  /* 白 */
-    --card: 31 31 31;  /* #1f1f1f */
-    --card-foreground: 255 255 255;  /* 白 */
-    --popover: 31 31 31;  /* #1f1f1f */
-    --popover-foreground: 255 255 255;  /* 白 */
-    --secondary: 64 64 64;  /* #404040 */
-    --secondary-foreground: 255 255 255;  /* 白 */
-    --muted: 64 64 64;  /* #404040 */
-    --muted-foreground: 156 163 175;  /* #9ca3af */
-    --border: 64 64 64;  /* #404040 */
-    --input: 64 64 64;  /* #404040 */
-    --ring: 255 165 0;  /* #ffa500 */
+    --background: 31 31 31; /* #1f1f1f */
+    --foreground: 255 255 255; /* 白 */
+    --card: 31 31 31; /* #1f1f1f */
+    --card-foreground: 255 255 255; /* 白 */
+    --popover: 31 31 31; /* #1f1f1f */
+    --popover-foreground: 255 255 255; /* 白 */
+    --secondary: 64 64 64; /* #404040 */
+    --secondary-foreground: 255 255 255; /* 白 */
+    --muted: 64 64 64; /* #404040 */
+    --muted-foreground: 156 163 175; /* #9ca3af */
+    --border: 64 64 64; /* #404040 */
+    --input: 64 64 64; /* #404040 */
+    --ring: 255 165 0; /* #ffa500 */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 31 31 31;  /* #1f1f1f */
-    --foreground: 255 255 255;  /* 白 */
-    --card: 31 31 31;  /* #1f1f1f */
-    --card-foreground: 255 255 255;  /* 白 */
-    --popover: 31 31 31;  /* #1f1f1f */
-    --popover-foreground: 255 255 255;  /* 白 */
-    --secondary: 64 64 64;  /* #404040 */
-    --secondary-foreground: 255 255 255;  /* 白 */
-    --muted: 64 64 64;  /* #404040 */
-    --muted-foreground: 156 163 175;  /* #9ca3af */
-    --border: 64 64 64;  /* #404040 */
-    --input: 64 64 64;  /* #404040 */
-    --ring: 255 165 0;  /* #ffa500 */
+    --background: 31 31 31; /* #1f1f1f */
+    --foreground: 255 255 255; /* 白 */
+    --card: 31 31 31; /* #1f1f1f */
+    --card-foreground: 255 255 255; /* 白 */
+    --popover: 31 31 31; /* #1f1f1f */
+    --popover-foreground: 255 255 255; /* 白 */
+    --secondary: 64 64 64; /* #404040 */
+    --secondary-foreground: 255 255 255; /* 白 */
+    --muted: 64 64 64; /* #404040 */
+    --muted-foreground: 156 163 175; /* #9ca3af */
+    --border: 64 64 64; /* #404040 */
+    --input: 64 64 64; /* #404040 */
+    --ring: 255 165 0; /* #ffa500 */
   }
 }
 
@@ -46,13 +46,13 @@
     color: white !important;
     background-color: #1f1f1f !important;
   }
-  
+
   body {
     @apply bg-background;
     color: white !important;
     background-color: #1f1f1f !important;
   }
-  
+
   * {
     @apply border-border;
   }
@@ -66,14 +66,14 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -81,4 +81,3 @@
     overflow: hidden;
   }
 }
-

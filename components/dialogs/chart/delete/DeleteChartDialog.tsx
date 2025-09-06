@@ -1,9 +1,16 @@
-"use client";
+'use client';
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle } from "lucide-react";
-import { useTranslation } from "@/lib/i18n";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 interface DeleteChartDialogProps {
   open: boolean;
@@ -18,7 +25,7 @@ export function DeleteChartDialog({
   onOpenChange,
   chartTitle,
   onConfirm,
-  isDeleting = false
+  isDeleting = false,
 }: DeleteChartDialogProps) {
   const { t } = useTranslation();
   return (
@@ -49,7 +56,7 @@ export function DeleteChartDialog({
             onClick={onConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>

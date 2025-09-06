@@ -3,6 +3,7 @@
 ## 1. API概要
 
 ### 1.1 基本情報
+
 - **フレームワーク**: Next.js 14 API Routes
 - **ベースURL**: `/api`
 - **認証方式**: Supabase Auth (JWT)
@@ -10,6 +11,7 @@
 - **エンコーディング**: UTF-8
 
 ### 1.2 設計方針
+
 - RESTful API設計
 - 一貫したエラーハンドリング
 - 適切なHTTPステータスコード
@@ -17,6 +19,7 @@
 - パフォーマンス最適化
 
 ### 1.3 共通レスポンス形式
+
 ```typescript
 // 成功レスポンス
 interface ApiResponse<T> {
@@ -39,6 +42,7 @@ interface ApiError {
 ## 2. 認証・認可
 
 ### 2.1 認証フロー
+
 ```typescript
 // 認証ミドルウェア
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
@@ -48,7 +52,7 @@ import type { NextRequest } from 'next/server';
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
-  
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -56,7 +60,10 @@ export async function middleware(req: NextRequest) {
   // 認証が必要なエンドポイントのチェック
   if (req.nextUrl.pathname.startsWith('/api/auth') && !session) {
     return NextResponse.json(
-      { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+      {
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+      },
       { status: 401 }
     );
   }
@@ -70,6 +77,7 @@ export const config = {
 ```
 
 ### 2.2 認可チェック
+
 ```typescript
 // 権限チェックユーティリティ
 export async function checkChartOwnership(chartId: string, authUserId: string) {
@@ -92,7 +100,7 @@ export async function checkChartOwnership(chartId: string, authUserId: string) {
   if (!chart || chart.user_id !== user.id) {
     throw new Error('アクセス権限がありません');
   }
-  
+
   return chart;
 }
 ```
@@ -102,6 +110,7 @@ export async function checkChartOwnership(chartId: string, authUserId: string) {
 ### 3.1 認証関連API
 
 #### 3.1.1 ユーザー登録
+
 ```typescript
 // POST /api/auth/register
 interface RegisterRequest {
@@ -124,11 +133,17 @@ interface RegisterResponse {
 export async function POST(request: Request) {
   try {
     const { username, email, password }: RegisterRequest = await request.json();
-    
+
     // バリデーション
     if (!username || !email || !password) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: '必須項目が不足しています' } },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: '必須項目が不足しています',
+          },
+        },
         { status: 400 }
       );
     }
@@ -138,20 +153,18 @@ export async function POST(request: Request) {
       email,
       password,
       options: {
-        data: { username }
-      }
+        data: { username },
+      },
     });
 
     if (error) throw error;
 
     // ユーザープロフィール作成
-    const { error: profileError } = await supabase
-      .from('users')
-      .insert({
-        auth_user_id: data.user!.id,
-        username,
-        plan_type: 'free'
-      });
+    const { error: profileError } = await supabase.from('users').insert({
+      auth_user_id: data.user!.id,
+      username,
+      plan_type: 'free',
+    });
 
     if (profileError) throw profileError;
 
@@ -162,15 +175,17 @@ export async function POST(request: Request) {
           id: data.user!.id,
           username,
           email,
-          plan_type: 'free'
+          plan_type: 'free',
         },
-        session: data.session
-      }
+        session: data.session,
+      },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'REGISTRATION_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'REGISTRATION_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -178,6 +193,7 @@ export async function POST(request: Request) {
 ```
 
 #### 3.1.2 ログイン
+
 ```typescript
 // POST /api/auth/login
 interface LoginRequest {
@@ -199,10 +215,10 @@ interface LoginResponse {
 export async function POST(request: Request) {
   try {
     const { email, password }: LoginRequest = await request.json();
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) throw error;
@@ -218,13 +234,15 @@ export async function POST(request: Request) {
       success: true,
       data: {
         user: profile,
-        session: data.session
-      }
+        session: data.session,
+      },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'LOGIN_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'LOGIN_ERROR', message: error.message },
+      },
       { status: 401 }
     );
   }
@@ -232,22 +250,25 @@ export async function POST(request: Request) {
 ```
 
 #### 3.1.3 ログアウト
+
 ```typescript
 // POST /api/auth/logout
 export async function POST(request: Request) {
   try {
     const { error } = await supabase.auth.signOut();
-    
+
     if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      message: 'ログアウトしました'
+      message: 'ログアウトしました',
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'LOGOUT_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'LOGOUT_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -257,6 +278,7 @@ export async function POST(request: Request) {
 ### 3.2 相性図管理API
 
 #### 3.2.1 相性図一覧取得
+
 ```typescript
 // GET /api/charts
 interface ChartsQueryParams {
@@ -300,14 +322,16 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('compatibility_charts')
-      .select(`
+      .select(
+        `
         id,
         title,
         created_at,
         users!inner(username),
         goods(id),
         bookmarks(id)
-      `)
+      `
+      )
       .eq('is_public', true);
 
     // 検索条件
@@ -338,14 +362,15 @@ export async function GET(request: Request) {
     if (error) throw error;
 
     // データ整形
-    const charts = data?.map(chart => ({
-      id: chart.id,
-      title: chart.title,
-      created_at: chart.created_at,
-      creator_name: chart.users.username,
-      good_count: chart.goods?.length || 0,
-      bookmark_count: chart.bookmarks?.length || 0
-    })) || [];
+    const charts =
+      data?.map((chart) => ({
+        id: chart.id,
+        title: chart.title,
+        created_at: chart.created_at,
+        creator_name: chart.users.username,
+        good_count: chart.goods?.length || 0,
+        bookmark_count: chart.bookmarks?.length || 0,
+      })) || [];
 
     return NextResponse.json({
       success: true,
@@ -355,14 +380,16 @@ export async function GET(request: Request) {
           page,
           limit,
           total: count || 0,
-          total_pages: Math.ceil((count || 0) / limit)
-        }
-      }
+          total_pages: Math.ceil((count || 0) / limit),
+        },
+      },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'FETCH_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'FETCH_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -370,6 +397,7 @@ export async function GET(request: Request) {
 ```
 
 #### 3.2.2 相性図編集
+
 ```typescript
 // POST /api/charts
 interface CreateChartRequest {
@@ -390,12 +418,17 @@ interface CreateChartResponse {
 export async function POST(request: Request) {
   try {
     const { title, is_public }: CreateChartRequest = await request.json();
-    
+
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -410,12 +443,32 @@ export async function POST(request: Request) {
     const { count: chartCount } = await supabase
       .from('compatibility_charts')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', (await supabase.from('users').select('id').eq('auth_user_id', session.user.id).single()).data?.id);
+      .eq(
+        'user_id',
+        (
+          await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_user_id', session.user.id)
+            .single()
+        ).data?.id
+      );
 
-    const maxCharts = user?.plan_type === 'premium' ? 100 : (user?.plan_type === 'supporter' ? 100 : 3);
+    const maxCharts =
+      user?.plan_type === 'premium'
+        ? 100
+        : user?.plan_type === 'supporter'
+          ? 100
+          : 3;
     if ((chartCount || 0) >= maxCharts) {
       return NextResponse.json(
-        { success: false, error: { code: 'PLAN_LIMIT', message: '作成可能な相性図の上限に達しています' } },
+        {
+          success: false,
+          error: {
+            code: 'PLAN_LIMIT',
+            message: '作成可能な相性図の上限に達しています',
+          },
+        },
         { status: 403 }
       );
     }
@@ -423,7 +476,10 @@ export async function POST(request: Request) {
     // バリデーション
     if (!title) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'タイトルは必須です' } },
+        {
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: 'タイトルは必須です' },
+        },
         { status: 400 }
       );
     }
@@ -434,21 +490,26 @@ export async function POST(request: Request) {
       .insert({
         user_id: session.user.id,
         title,
-        is_public
+        is_public,
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({
-      success: true,
-      data: { chart }
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: { chart },
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'CREATE_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'CREATE_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -456,6 +517,7 @@ export async function POST(request: Request) {
 ```
 
 #### 3.2.3 相性図詳細取得
+
 ```typescript
 // GET /api/charts/[id]
 interface ChartDetailResponse {
@@ -494,19 +556,24 @@ export async function GET(
     // 相性図基本情報取得
     const { data: chart, error: chartError } = await supabase
       .from('compatibility_charts')
-      .select(`
+      .select(
+        `
         *,
         users!inner(username),
         goods(id),
         bookmarks(id)
-      `)
+      `
+      )
       .eq('id', chartId)
       .eq('is_public', true)
       .single();
 
     if (chartError || !chart) {
       return NextResponse.json(
-        { success: false, error: { code: 'NOT_FOUND', message: '相性図が見つかりません' } },
+        {
+          success: false,
+          error: { code: 'NOT_FOUND', message: '相性図が見つかりません' },
+        },
         { status: 404 }
       );
     }
@@ -521,16 +588,19 @@ export async function GET(
     if (elementsError) throw elementsError;
 
     // 相性データ取得
-    const { data: compatibilities, error: compatibilitiesError } = await supabase
-      .from('compatibilities')
-      .select('*')
-      .in('left_element_id', elements?.map(e => e.id) || [])
-      .in('right_element_id', elements?.map(e => e.id) || []);
+    const { data: compatibilities, error: compatibilitiesError } =
+      await supabase
+        .from('compatibilities')
+        .select('*')
+        .in('left_element_id', elements?.map((e) => e.id) || [])
+        .in('right_element_id', elements?.map((e) => e.id) || []);
 
     if (compatibilitiesError) throw compatibilitiesError;
 
     // ユーザーのGood・ブックマーク状態確認
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     let isBookmarked = false;
     let isGooded = false;
 
@@ -573,16 +643,18 @@ export async function GET(
           good_count: chart.goods?.length || 0,
           bookmark_count: chart.bookmarks?.length || 0,
           is_bookmarked: isBookmarked,
-          is_gooded: isGooded
+          is_gooded: isGooded,
         },
         elements: elements || [],
-        compatibilities: compatibilities || []
-      }
+        compatibilities: compatibilities || [],
+      },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'FETCH_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'FETCH_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -590,6 +662,7 @@ export async function GET(
 ```
 
 #### 3.2.4 相性図更新
+
 ```typescript
 // PUT /api/charts/[id]
 interface UpdateChartRequest {
@@ -607,10 +680,15 @@ export async function PUT(
     const updates: UpdateChartRequest = await request.json();
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -630,12 +708,14 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      data: { chart }
+      data: { chart },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'UPDATE_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'UPDATE_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -643,6 +723,7 @@ export async function PUT(
 ```
 
 #### 3.2.5 相性図削除
+
 ```typescript
 // DELETE /api/charts/[id]
 export async function DELETE(
@@ -653,10 +734,15 @@ export async function DELETE(
     const chartId = params.id;
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -674,12 +760,14 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: '相性図を削除しました'
+      message: '相性図を削除しました',
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'DELETE_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'DELETE_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -689,6 +777,7 @@ export async function DELETE(
 ### 3.3 要素管理API
 
 #### 3.3.1 要素追加
+
 ```typescript
 // POST /api/charts/[id]/elements
 interface CreateElementRequest {
@@ -706,10 +795,15 @@ export async function POST(
     const { name, side }: CreateElementRequest = await request.json();
 
     // 認証・権限チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -724,21 +818,26 @@ export async function POST(
       .insert({
         chart_id: chartId,
         name,
-        side
+        side,
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({
-      success: true,
-      data: { element }
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: { element },
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'CREATE_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'CREATE_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -748,6 +847,7 @@ export async function POST(
 ### 3.4 相性管理API
 
 #### 3.4.1 相性設定
+
 ```typescript
 // POST /api/charts/[id]/compatibilities
 interface CreateCompatibilityRequest {
@@ -764,13 +864,23 @@ export async function POST(
 ) {
   try {
     const chartId = params.id;
-    const { left_element_id, right_element_id, compatibility_score_id, reverse_compatibility_score_id }: CreateCompatibilityRequest = await request.json();
+    const {
+      left_element_id,
+      right_element_id,
+      compatibility_score_id,
+      reverse_compatibility_score_id,
+    }: CreateCompatibilityRequest = await request.json();
 
     // 認証・権限チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -780,7 +890,13 @@ export async function POST(
     // バリデーション
     if (!compatibility_score_id) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: '相性スコアIDが指定されていません' } },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: '相性スコアIDが指定されていません',
+          },
+        },
         { status: 400 }
       );
     }
@@ -794,7 +910,13 @@ export async function POST(
 
     if (!elements || elements.length !== 2) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: '無効な要素IDが指定されています' } },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: '無効な要素IDが指定されています',
+          },
+        },
         { status: 400 }
       );
     }
@@ -806,21 +928,26 @@ export async function POST(
         left_element_id,
         right_element_id,
         compatibility_score_id,
-        reverse_compatibility_score_id
+        reverse_compatibility_score_id,
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({
-      success: true,
-      data: { compatibility }
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: { compatibility },
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'CREATE_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'CREATE_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -830,6 +957,7 @@ export async function POST(
 ### 3.5 インタラクションAPI
 
 #### 3.5.1 Good機能
+
 ```typescript
 // POST /api/charts/[id]/goods
 export async function POST(
@@ -840,10 +968,15 @@ export async function POST(
     const chartId = params.id;
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -858,26 +991,26 @@ export async function POST(
 
     if (existingGood) {
       return NextResponse.json(
-        { success: false, error: { code: 'ALREADY_GOODED', message: '既にGood済みです' } },
+        {
+          success: false,
+          error: { code: 'ALREADY_GOODED', message: '既にGood済みです' },
+        },
         { status: 400 }
       );
     }
 
     // Good作成
-    const { error } = await supabase
-      .from('goods')
-      .insert({
-        chart_id: chartId,
-        user_id: session.user.id
-      });
+    const { error } = await supabase.from('goods').insert({
+      chart_id: chartId,
+      user_id: session.user.id,
+    });
 
     if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      message: 'Goodしました'
+      message: 'Goodしました',
     });
-
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: { code: 'GOOD_ERROR', message: error.message } },
@@ -895,10 +1028,15 @@ export async function DELETE(
     const chartId = params.id;
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -914,12 +1052,14 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Goodを取り消しました'
+      message: 'Goodを取り消しました',
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'UNGOOD_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'UNGOOD_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -927,6 +1067,7 @@ export async function DELETE(
 ```
 
 #### 3.5.2 ブックマーク機能
+
 ```typescript
 // POST /api/charts/[id]/bookmarks
 export async function POST(
@@ -937,10 +1078,15 @@ export async function POST(
     const chartId = params.id;
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -955,29 +1101,35 @@ export async function POST(
 
     if (existingBookmark) {
       return NextResponse.json(
-        { success: false, error: { code: 'ALREADY_BOOKMARKED', message: '既にブックマーク済みです' } },
+        {
+          success: false,
+          error: {
+            code: 'ALREADY_BOOKMARKED',
+            message: '既にブックマーク済みです',
+          },
+        },
         { status: 400 }
       );
     }
 
     // ブックマーク作成
-    const { error } = await supabase
-      .from('bookmarks')
-      .insert({
-        chart_id: chartId,
-        user_id: session.user.id
-      });
+    const { error } = await supabase.from('bookmarks').insert({
+      chart_id: chartId,
+      user_id: session.user.id,
+    });
 
     if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      message: 'ブックマークしました'
+      message: 'ブックマークしました',
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'BOOKMARK_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'BOOKMARK_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -987,6 +1139,7 @@ export async function POST(
 ### 3.6 コメントAPI
 
 #### 3.6.1 コメント投稿
+
 ```typescript
 // POST /api/charts/[id]/comments
 interface CreateCommentRequest {
@@ -1003,10 +1156,15 @@ export async function POST(
     const { content }: CreateCommentRequest = await request.json();
 
     // 認証チェック
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: '認証が必要です' } },
+        {
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: '認証が必要です' },
+        },
         { status: 401 }
       );
     }
@@ -1014,14 +1172,26 @@ export async function POST(
     // バリデーション
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'コメント内容を入力してください' } },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'コメント内容を入力してください',
+          },
+        },
         { status: 400 }
       );
     }
 
     if (content.length > 1000) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'コメントは1000文字以内で入力してください' } },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'コメントは1000文字以内で入力してください',
+          },
+        },
         { status: 400 }
       );
     }
@@ -1032,24 +1202,31 @@ export async function POST(
       .insert({
         chart_id: chartId,
         user_id: session.user.id,
-        content: content.trim()
+        content: content.trim(),
       })
-      .select(`
+      .select(
+        `
         *,
         users(username)
-      `)
+      `
+      )
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({
-      success: true,
-      data: { comment }
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: { comment },
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'COMMENT_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'COMMENT_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -1057,6 +1234,7 @@ export async function POST(
 ```
 
 #### 3.6.2 コメント一覧取得
+
 ```typescript
 // GET /api/charts/[id]/comments
 interface CommentsResponse {
@@ -1085,7 +1263,10 @@ export async function GET(
 
     if (!chart || !chart.is_public) {
       return NextResponse.json(
-        { success: false, error: { code: 'NOT_FOUND', message: '相性図が見つかりません' } },
+        {
+          success: false,
+          error: { code: 'NOT_FOUND', message: '相性図が見つかりません' },
+        },
         { status: 404 }
       );
     }
@@ -1093,12 +1274,14 @@ export async function GET(
     // コメント取得
     const { data: comments, error } = await supabase
       .from('comments')
-      .select(`
+      .select(
+        `
         id,
         content,
         created_at,
         users(username)
-      `)
+      `
+      )
       .eq('chart_id', chartId)
       .order('created_at', { ascending: false });
 
@@ -1107,18 +1290,21 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: {
-        comments: comments?.map(comment => ({
-          id: comment.id,
-          content: comment.content,
-          created_at: comment.created_at,
-          username: comment.users.username
-        })) || []
-      }
+        comments:
+          comments?.map((comment) => ({
+            id: comment.id,
+            content: comment.content,
+            created_at: comment.created_at,
+            username: comment.users.username,
+          })) || [],
+      },
     });
-
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: { code: 'FETCH_ERROR', message: error.message } },
+      {
+        success: false,
+        error: { code: 'FETCH_ERROR', message: error.message },
+      },
       { status: 500 }
     );
   }
@@ -1128,6 +1314,7 @@ export async function GET(
 ## 4. エラーハンドリング
 
 ### 4.1 HTTPステータスコード
+
 - **200**: 成功
 - **201**: 作成成功
 - **400**: バリデーションエラー
@@ -1137,23 +1324,24 @@ export async function GET(
 - **500**: サーバーエラー
 
 ### 4.2 エラーコード一覧
+
 ```typescript
 enum ErrorCode {
   // 認証・認可
   UNAUTHORIZED = 'UNAUTHORIZED',
   FORBIDDEN = 'FORBIDDEN',
-  
+
   // バリデーション
   VALIDATION_ERROR = 'VALIDATION_ERROR',
-  
+
   // ビジネスロジック
   PLAN_LIMIT = 'PLAN_LIMIT',
   ALREADY_GOODED = 'ALREADY_GOODED',
   ALREADY_BOOKMARKED = 'ALREADY_BOOKMARKED',
-  
+
   // リソース
   NOT_FOUND = 'NOT_FOUND',
-  
+
   // システム
   FETCH_ERROR = 'FETCH_ERROR',
   CREATE_ERROR = 'CREATE_ERROR',
@@ -1165,38 +1353,51 @@ enum ErrorCode {
   GOOD_ERROR = 'GOOD_ERROR',
   UNGOOD_ERROR = 'UNGOOD_ERROR',
   BOOKMARK_ERROR = 'BOOKMARK_ERROR',
-  COMMENT_ERROR = 'COMMENT_ERROR'
+  COMMENT_ERROR = 'COMMENT_ERROR',
 }
 ```
 
 ## 5. バリデーション
 
 ### 5.1 入力バリデーション
+
 ```typescript
 // Zodスキーマ例
 import { z } from 'zod';
 
 export const CreateChartSchema = z.object({
-  title: z.string().min(1, 'タイトルは必須です').max(100, 'タイトルは100文字以内で入力してください'),
-  is_public: z.boolean()
+  title: z
+    .string()
+    .min(1, 'タイトルは必須です')
+    .max(100, 'タイトルは100文字以内で入力してください'),
+  is_public: z.boolean(),
 });
 
 export const CreateElementSchema = z.object({
-  name: z.string().min(1, '要素名は必須です').max(100, '要素名は100文字以内で入力してください'),
-  side: z.enum(['left', 'right'], { errorMap: () => ({ message: 'サイドはleftまたはrightで指定してください' }) })
+  name: z
+    .string()
+    .min(1, '要素名は必須です')
+    .max(100, '要素名は100文字以内で入力してください'),
+  side: z.enum(['left', 'right'], {
+    errorMap: () => ({ message: 'サイドはleftまたはrightで指定してください' }),
+  }),
 });
 
 export const CreateCompatibilitySchema = z.object({
   left_element_id: z.string().uuid('無効な要素IDです'),
   right_element_id: z.string().uuid('無効な要素IDです'),
   compatibility_score_id: z.string().uuid('無効な相性スコアIDです'),
-  reverse_compatibility_score_id: z.string().uuid('無効な相性スコアIDです').optional()
+  reverse_compatibility_score_id: z
+    .string()
+    .uuid('無効な相性スコアIDです')
+    .optional(),
 });
 ```
 
 ## 6. レート制限
 
 ### 6.1 実装方針
+
 ```typescript
 // レート制限ミドルウェア例
 import { NextResponse } from 'next/server';
@@ -1225,10 +1426,17 @@ export function rateLimit(identifier: string, limit: number, windowMs: number) {
 // 使用例
 export async function middleware(req: NextRequest) {
   const ip = req.ip || 'unknown';
-  
-  if (!rateLimit(ip, 100, 60000)) { // 1分間に100リクエスト
+
+  if (!rateLimit(ip, 100, 60000)) {
+    // 1分間に100リクエスト
     return NextResponse.json(
-      { success: false, error: { code: 'RATE_LIMIT_EXCEEDED', message: 'リクエストが多すぎます' } },
+      {
+        success: false,
+        error: {
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: 'リクエストが多すぎます',
+        },
+      },
       { status: 429 }
     );
   }
@@ -1240,6 +1448,7 @@ export async function middleware(req: NextRequest) {
 ## 7. セキュリティ
 
 ### 7.1 CORS設定
+
 ```typescript
 // CORS設定例
 export async function OPTIONS(request: Request) {
@@ -1256,6 +1465,7 @@ export async function OPTIONS(request: Request) {
 ```
 
 ### 7.2 入力サニタイゼーション
+
 - SQLインジェクション対策: Supabaseクライアントの使用
 - XSS対策: 出力時のエスケープ処理
 - CSRF対策: SameSite Cookie設定
@@ -1263,22 +1473,24 @@ export async function OPTIONS(request: Request) {
 ## 8. パフォーマンス最適化
 
 ### 8.1 キャッシュ戦略
+
 - 静的データのキャッシュ
 - データベースクエリの最適化
 - レスポンス圧縮
 
 ### 8.2 非同期処理
+
 ```typescript
 // 非同期処理例
 export async function POST(request: Request) {
   // メイン処理
   const result = await processMainLogic();
-  
+
   // 非同期でログ記録
   setImmediate(async () => {
     await logActivity(request, result);
   });
-  
+
   return NextResponse.json(result);
 }
 ```
@@ -1286,16 +1498,19 @@ export async function POST(request: Request) {
 ## 9. テスト戦略
 
 ### 9.1 単体テスト
+
 - 各API関数のテスト
 - バリデーション関数のテスト
 - ユーティリティ関数のテスト
 
 ### 9.2 統合テスト
+
 - APIエンドポイントのテスト
 - データベース連携のテスト
 - 認証・認可のテスト
 
 ### 9.3 テストツール
+
 - Jest
 - Supertest
 - MSW (Mock Service Worker)
@@ -1307,4 +1522,4 @@ export async function POST(request: Request) {
 1. **フロントエンド詳細設計書** - APIを活用するUI/UX設計
 2. **実装順序・タスク分解書** - 開発計画
 
-各設計書は、このAPI詳細設計書のエンドポイントとデータ構造を前提として作成される。 
+各設計書は、このAPI詳細設計書のエンドポイントとデータ構造を前提として作成される。

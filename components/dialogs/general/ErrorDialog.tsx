@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import {
@@ -23,7 +23,6 @@ export const ErrorDialog: React.FC<ErrorDialogProps> = ({
   onClose,
   message,
 }) => {
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -32,14 +31,10 @@ export const ErrorDialog: React.FC<ErrorDialogProps> = ({
             <AlertCircle className="h-5 w-5 text-destructive" />
             <DialogTitle className="text-destructive">Error</DialogTitle>
           </div>
-          <DialogDescription className="pt-2">
-            {message}
-          </DialogDescription>
+          <DialogDescription className="pt-2">{message}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-            <Button onClick={onClose}>
-                Close
-            </Button>
+          <Button onClick={onClose}>Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

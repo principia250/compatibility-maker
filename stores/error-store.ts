@@ -9,7 +9,7 @@ export interface ErrorItem {
 
 interface ErrorState {
   errors: ErrorItem[];
-  
+
   // Actions
   addError: (message: string, onClose?: () => void) => void;
   removeError: (id: string) => void;
@@ -27,15 +27,15 @@ export const useErrorStore = create<ErrorState>()((set, get) => ({
       timestamp: Date.now(),
       onClose,
     };
-    
+
     set((state) => ({
-      errors: [...state.errors, error]
+      errors: [...state.errors, error],
     }));
   },
 
   removeError: (id: string) => {
     set((state) => ({
-      errors: state.errors.filter(error => error.id !== id)
+      errors: state.errors.filter((error) => error.id !== id),
     }));
   },
 
