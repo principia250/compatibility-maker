@@ -8,7 +8,7 @@ import ErrorProvider from '@/components/ErrorProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Compatibility Maker',
+  title: 'SOUKOKU',
   description: 'Create and manage compatibility charts',
 };
 
