@@ -15,6 +15,34 @@ const nextConfig: NextConfig = {
   experimental: {
     webpackBuildWorker: true,
   },
+  
+  // 画像最適化
+  images: {
+    formats: ['image/webp', 'image/avif'],
+  },
+  
+  // セキュリティヘッダー
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;

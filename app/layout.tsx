@@ -10,6 +10,24 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'SOUKOKU',
   description: 'Create and manage compatibility charts',
+  keywords: 'compatibility chart, chart maker, relationship analysis',
+  authors: [{ name: 'SOUKOKU Team' }],
+  robots: "index, follow",
+  openGraph: {
+    title: 'SOUKOKU - Compatibility Maker',
+    description: 'Create and manage compatibility charts',
+    type: 'website',
+    url: 'https://soukoku.vercel.app',
+    siteName: 'SOUKOKU',
+    images: [
+      {
+        url: '/images/open-graph/open-graph.png',
+        width: 1200,
+        height: 630,
+        alt: 'SOUKOKU - Compatibility Chart Maker',
+      }
+    ],
+  },
 };
 
 export default function RootLayout({

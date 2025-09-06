@@ -38,7 +38,7 @@ export default function ChartCommentsPage() {
     if (!isLoading) {
       fetch();
     }
-  }, [chartId, isLoading, addError]);
+  }, [chartId, isLoading]); // addErrorを依存配列から削除
 
   if (isLoading || !data) {
     return <Loading />;

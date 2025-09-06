@@ -65,7 +65,7 @@ function MypageContent() {
       }
     };
     fetch();
-  }, [user, addError]);
+  }, [user]); // addErrorを依存配列から削除
 
   const handleDuplicate = async (chartId: string) => {
     setIsDuplicating(chartId);

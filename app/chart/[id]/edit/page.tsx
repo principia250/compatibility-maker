@@ -117,7 +117,7 @@ export default function ChartEditPage() {
     if (chartId && user?.id) {
       fetch();
     }
-  }, [user, chartId, addError]);
+  }, [user, chartId]); // addErrorを依存配列から削除
 
   // カテゴリ名変更時の処理
   const handleCategoryNameChange = (side: 'left' | 'right', name: string) => {

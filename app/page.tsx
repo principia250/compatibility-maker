@@ -76,7 +76,7 @@ export default function HomePage() {
         {/* コンテンツ部分 */}
         <div className="border border-white rounded-lg p-4">
           <NewsCard
-            date="2025/09/05"
+            date="2025/09/07"
             content={t('サイトを公開しました。', 'The site is now open.')}
           />
         </div>

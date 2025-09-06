@@ -60,7 +60,7 @@ export default function ChartDetailPage() {
     if (!isLoading) {
       fetch();
     }
-  }, [user, chartId, isLoading, addError]);
+  }, [user, chartId, isLoading]); // addErrorを依存配列から削除
 
   const handleSubmitComment = async () => {
     if (!comment.trim() || !user?.id || !chartId) {
