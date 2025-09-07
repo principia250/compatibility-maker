@@ -59,13 +59,6 @@ export default function HomePage() {
             )}
           </li>
           <li>• {t('不具合が発生する場合があります', 'Bugs may occur')}</li>
-          <li>
-            •{' '}
-            {t(
-              '将来的に広告や有料プランを導入予定です',
-              'We plan to introduce ads and paid plans in the future'
-            )}
-          </li>
         </ul>
       </div>
 

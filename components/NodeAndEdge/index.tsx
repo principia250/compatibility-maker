@@ -360,7 +360,7 @@ const NodeAndEdge = ({
 
   return (
     <>
-      <div className="w-full flex flex-row">
+      <div className="w-full flex flex-row overflow-x-hidden">
         {/* 左側 */}
         <div className="flex w-[42%] sm:w-1/3 flex-col gap-[20px]">
           {/* カテゴリ名 */}
@@ -447,7 +447,7 @@ const NodeAndEdge = ({
         {/* 中央 */}
         <div
           ref={centerRefSm}
-          className="w-[16%] sm:w-1/3 flex justify-center relative hidden sm:flex"
+          className="w-[16%] sm:w-1/3 flex justify-center relative hidden sm:flex overflow-x-hidden"
         >
           {arrowVariables?.map((arrowVariable) => {
             if (arrowVariable === null) {
@@ -477,7 +477,7 @@ const NodeAndEdge = ({
         </div>
         <div
           ref={centerRef}
-          className="w-[16%] sm:w-1/3 flex justify-center relative sm:hidden"
+          className="w-[16%] sm:w-1/3 flex justify-center relative sm:hidden overflow-x-hidden"
         >
           {arrowVariables?.map((arrowVariable) => {
             if (arrowVariable === null) {
