@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { COMPABILITY_NOTATION } from '@/constants/compability-notation';
+import clsx from 'clsx';
 
 interface CompatibilityOption {
   value: number | null;
@@ -178,7 +179,11 @@ export const EditCompatibilityDialog = ({
                 return (
                   <div
                     key={rightNode.id}
-                    className="border border-white rounded-lg p-2"
+                    className={clsx(
+                      "border rounded-lg p-2",
+                      // 相性が全て設定されていない場合は赤くする
+                      currentScore === null ? 'border-red-600' : 'border-white'
+                    )}
                   >
                     <div className="flex items-center justify-between gap-4">
                       <Label className="flex-1">{rightNode.name}</Label>
@@ -216,6 +221,8 @@ export const EditCompatibilityDialog = ({
                         <Label className="text-sm">Note</Label>
                         <Input
                           value={compatibility?.note ?? ''}
+                          // compatibilityが無い場合はdisabled
+                          disabled={!currentScore}
                           onChange={(e) =>
                             handleNoteChange(rightNode.id, e.target.value)
                           }

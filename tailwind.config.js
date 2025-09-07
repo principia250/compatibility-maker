@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
+import tailwindcssAnimate from 'tailwindcss-animate';
+import lineClamp from '@tailwindcss/line-clamp';
 
-module.exports = {
+const config = {
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -74,8 +76,8 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwindcss-animate'),
-    require('@tailwindcss/line-clamp'),
+    tailwindcssAnimate,
+    lineClamp,
     // カスタムCSSプラグイン
     function ({ addUtilities }) {
       const newUtilities = {
@@ -102,3 +104,5 @@ module.exports = {
     },
   ],
 };
+
+export default config;

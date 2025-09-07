@@ -18,6 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useTranslation } from '@/lib/i18n';
+import { CircleAlert, Save } from 'lucide-react';
+import clsx from 'clsx';
 
 // 深い比較: ChartEditDataの等価性を判定
 function isChartEditDataEqual(
@@ -293,34 +295,58 @@ export default function ChartEditPage() {
     redirect('/auth/login');
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="relative flex flex-col gap-4">
+      {/* 保存中のオーバーレイ */}
+      {isSaving && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background border border-primary rounded-lg p-6 flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p>Saving...</p>
+          </div>
+        </div>
+      )}
       {/* セーブボタン */}
-      <div>
+      <div className={clsx(
+        "flex flex-col justify-end gap-2",
+        "sm:flex-row-reverse sm:items-center sm:justify-end"
+        )}>
+        <div className="border border-primary rounded-lg px-2 py-2 flex flex-row gap-2 items-center">
+          <CircleAlert className="w-8 h-8 text-red-600" />
+          {t(
+            '(=´ー｀)ノ 保存をお忘れなく！',
+            "(=´ー｀)ノ Don't forget to save!"
+          )}
+        </div>
         {isChartEditDataEqual(initialDataRef.current, data) ? (
           <Button variant="deactive" disabled>
+            <Save className="w-4 h-4" />
             Save
           </Button>
         ) : (
           <>
-            <Button className="mr-2" onClick={handleSave} disabled={isSaving}>
+            <Button onClick={handleSave} disabled={isSaving}>
+              <Save className="w-4 h-4" />
               {isSaving ? 'Saving...' : 'Save'}
             </Button>
-            {t(
-              '(=´ー｀)ノ 保存をお忘れなく！',
-              "(=´ー｀)ノ Don't forget to save!"
-            )}
           </>
         )}
       </div>
       <div>
-        {!data.title && <div className="text-red-600">Enter a title.</div>}
+        {!data.title && <div className="text-red-600">
+          {t('タイトルを入力してください', 'Enter a title.')}
+        </div>}
         {!data.leftCategory.name && (
-          <div className="text-red-600">Enter a left side name.</div>
+          <div className="text-red-600">
+            {t('左側の名前を入力してください', 'Enter a left side name.')}
+          </div>
         )}
         {!data.rightCategory.name && (
-          <div className="text-red-600">Enter a right side name.</div>
+          <div className="text-red-600">
+            {t('右側の名前を入力してください', 'Enter a right side name.')}
+          </div>
         )}
       </div>
+
       {/* chart名 */}
       <Label htmlFor="chart-title" className="text-primary">
         Title
@@ -380,6 +406,48 @@ export default function ChartEditPage() {
         handleNodeNameChange={handleNodeNameChange}
         handleDeleteNode={handleDeleteNode}
       />
+
+      {/* セーブボタン */}
+      <div className={clsx(
+        "flex flex-col justify-end gap-2",
+        "sm:flex-row-reverse sm:items-center sm:justify-end"
+        )}>
+        <div className="border border-primary rounded-lg px-2 py-2 flex flex-row gap-2 items-center">
+          <CircleAlert className="w-8 h-8 text-red-600" />
+          {t(
+            '(=´ー｀)ノ 保存をお忘れなく！',
+            "(=´ー｀)ノ Don't forget to save!"
+          )}
+        </div>
+        {isChartEditDataEqual(initialDataRef.current, data) ? (
+          <Button variant="deactive" disabled>
+            <Save className="w-4 h-4" />
+            Save
+          </Button>
+        ) : (
+          <>
+            <Button onClick={handleSave} disabled={isSaving}>
+              <Save className="w-4 h-4" />
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+          </>
+        )}
+      </div>
+      <div>
+        {!data.title && <div className="text-red-600">
+          {t('タイトルを入力してください', 'Enter a title.')}
+        </div>}
+        {!data.leftCategory.name && (
+          <div className="text-red-600">
+            {t('左側の名前を入力してください', 'Enter a left side name.')}
+          </div>
+        )}
+        {!data.rightCategory.name && (
+          <div className="text-red-600">
+            {t('右側の名前を入力してください', 'Enter a right side name.')}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
