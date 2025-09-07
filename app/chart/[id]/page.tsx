@@ -194,7 +194,7 @@ export default function ChartDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-x-hidden">
       {/* タイトル・ユーザー */}
       <div className="flex flex-col gap-2">
         <div className="text-2xl font-bold">{data.title}</div>
