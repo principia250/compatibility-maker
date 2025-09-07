@@ -13,6 +13,7 @@ import { Plus } from 'lucide-react';
 import { AddNodeDialog } from '@/components/dialogs/chart/edit/AddNode';
 import { EditCompatibilityDialog } from '@/components/dialogs/chart/edit/EditCompatibility';
 import { EditRightNodeDialog } from '@/components/dialogs/chart/edit/EditRightNode';
+import { useTranslation } from '@/lib/i18n';
 
 const nodeGap = 20;
 
@@ -37,6 +38,7 @@ const NodeAndEdge = ({
   const centerRefSm = useRef<HTMLDivElement>(null);
   const [centerWidth, setCenterWidth] = useState(1);
   const [centerWidthSm, setCenterWidthSm] = useState(1);
+  const { t } = useTranslation();
   // propsを再代入
   const [leftElementsLocal, setLeftElementsLocal] = useState(
     leftElements?.map((element) => ({
@@ -595,8 +597,7 @@ const NodeAndEdge = ({
       </div>
       {checkOneCompatibility() || !isEditing || (
         <div className="text-red-600">
-          There are nodes for which all compatibility settings have not been
-          configured.
+          {t("相性が全て設定されていないアイテムがあります。", "There are items for which all compatibility settings have not been configured.")}
         </div>
       )}
 

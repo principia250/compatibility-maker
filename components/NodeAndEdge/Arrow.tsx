@@ -39,7 +39,7 @@ export const Arrow = ({
       <div
         className={clsx(
           `relative group`,
-          note ? 'h-[4px] cursor-pointer' : 'h-[1px]',
+          note ? 'h-[3px] cursor-pointer' : 'h-[1px]',
           className
         )}
         style={{
@@ -52,7 +52,7 @@ export const Arrow = ({
         <div
           className={clsx(
             'w-[10px] rotate-[-45deg] absolute top-[4px]',
-            note ? 'h-[4px] right-[0px] cursor-pointer' : 'h-[1px] right-[-1px]'
+            note ? 'h-[3px] right-[-0.5px] cursor-pointer' : 'h-[1px] right-[-1px]'
           )}
           style={{
             backgroundColor: color,
@@ -61,7 +61,7 @@ export const Arrow = ({
         <div
           className={clsx(
             'w-[10px] rotate-[45deg] absolute top-[-4px]',
-            note ? 'h-[4px] right-[0px] cursor-pointer' : 'h-[1px] right-[-1px]'
+            note ? 'h-[3px] right-[-0.5px] cursor-pointer' : 'h-[1px] right-[-1px]'
           )}
           style={{
             backgroundColor: color,

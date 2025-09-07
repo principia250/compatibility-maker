@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import CustomLink from '@/components/CustomLink';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 export function ForgotPasswordForm({
   className,
@@ -23,6 +24,7 @@ export function ForgotPasswordForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,12 +52,13 @@ export function ForgotPasswordForm({
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
+            <CardDescription>
+              {t('パスワードリセットの手順をメールで送信しました', 'Password reset instructions sent')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
+            <p className="text-sm">
+              {t('メールボックスを確認してください', 'Please check your email')}
             </p>
           </CardContent>
         </Card>
@@ -64,8 +67,7 @@ export function ForgotPasswordForm({
           <CardHeader>
             <CardTitle className="text-2xl">Reset Your Password</CardTitle>
             <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
+              {t('メールアドレスを入力してください', 'Type in your email and we&apos;ll send you a link to reset your password')}
             </CardDescription>
           </CardHeader>
           <CardContent>

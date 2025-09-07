@@ -12,11 +12,6 @@
 name: soukoku-supabase
 APIキーはメモしてない
 
-## supabase
-
-supabase link --project-ref <project-id>
-supabase gen types typescript --project-id <project-id> > database.types.ts
-
 ## Phase1 初期リリース
 
 ## Phase2 広告導入
