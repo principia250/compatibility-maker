@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Create and manage compatibility charts',
   keywords: 'compatibility chart, chart maker, relationship analysis',
   authors: [{ name: 'SOUKOKU Team' }],
-  robots: "index, follow",
+  robots: 'index, follow',
   openGraph: {
     title: 'SOUKOKU - Compatibility Maker',
     description: 'Create and manage compatibility charts',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: 'SOUKOKU - Compatibility Chart Maker',
-      }
+      },
     ],
   },
 };

@@ -53,7 +53,10 @@ export function ForgotPasswordForm({
           <CardHeader>
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
             <CardDescription>
-              {t('パスワードリセットの手順をメールで送信しました', 'Password reset instructions sent')}
+              {t(
+                'パスワードリセットの手順をメールで送信しました',
+                'Password reset instructions sent'
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,7 +70,10 @@ export function ForgotPasswordForm({
           <CardHeader>
             <CardTitle className="text-2xl">Reset Your Password</CardTitle>
             <CardDescription>
-              {t('メールアドレスを入力してください', 'Type in your email and we&apos;ll send you a link to reset your password')}
+              {t(
+                'メールアドレスを入力してください',
+                'Type in your email and we&apos;ll send you a link to reset your password'
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>

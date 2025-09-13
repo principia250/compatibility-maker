@@ -1,10 +1,11 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'SOUKOKU - Compatibility Chart Maker',
     short_name: 'SOUKOKU',
-    description: 'Create and manage compatibility charts based on the Five Elements theory',
+    description:
+      'Create and manage compatibility charts based on the Five Elements theory',
     start_url: '/',
     display: 'standalone',
     background_color: '#000000',
@@ -16,5 +17,5 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/x-icon',
       },
     ],
-  }
+  };
 }

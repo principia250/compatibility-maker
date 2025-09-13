@@ -53,6 +53,7 @@ function SearchContent() {
   // 検索結果の状態
   const [searchData, setSearchData] = useState<SearchResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [pageInput, setPageInput] = useState(currentPage.toString());
 
   // 初期表示時にクエリパラメータに基づいて検索実行
   useEffect(() => {
@@ -107,6 +108,7 @@ function SearchContent() {
   // 検索実行
   const handleSearch = async () => {
     setCurrentPage(1); // 検索時は1ページ目に戻す
+    setPageInput('1'); // 入力ボックスも1にリセット
     setIsLoading(true);
 
     try {
@@ -141,6 +143,7 @@ function SearchContent() {
   // ページネーション
   const handlePageChange = async (page: number) => {
     setCurrentPage(page);
+    setPageInput(page.toString());
 
     // 検索を実行
     setIsLoading(true);
@@ -170,8 +173,33 @@ function SearchContent() {
       setIsLoading(false);
     }
 
-    // URLを更新
-    updateURL();
+    // URLを更新（新しいページ番号を使用）
+    const newSearchParams = new URLSearchParams();
+    if (query) newSearchParams.set('q', query);
+    if (searchBy !== 'title') newSearchParams.set('searchBy', searchBy);
+    if (sortBy !== 'updatedAt') newSearchParams.set('sortBy', sortBy);
+    if (sortOrder !== 'desc') newSearchParams.set('sortOrder', sortOrder);
+    if (page !== 1) newSearchParams.set('page', page.toString());
+
+    const newUrl = `/search${newSearchParams.toString() ? '?' + newSearchParams.toString() : ''}`;
+    router.replace(newUrl, { scroll: false });
+  };
+
+  // ページ入力の処理
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handlePageInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pageNumber = parseInt(pageInput);
+
+    if (searchData && pageNumber >= 1 && pageNumber <= searchData.totalPages) {
+      handlePageChange(pageNumber);
+    } else {
+      // 無効なページ番号の場合は現在のページに戻す
+      setPageInput(currentPage.toString());
+    }
   };
 
   // ソート変更
@@ -182,6 +210,7 @@ function SearchContent() {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
     setCurrentPage(1);
+    setPageInput('1');
   };
 
   // 日付フォーマット
@@ -355,20 +384,33 @@ function SearchContent() {
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || isLoading}
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
 
-              <span className="px-4 py-2 text-sm">
-                Page {currentPage} of {searchData.totalPages}
-              </span>
+              <form
+                onSubmit={handlePageInputSubmit}
+                className="flex items-center gap-2"
+              >
+                <span className="text-sm">Page</span>
+                <Input
+                  type="number"
+                  min="1"
+                  max={searchData.totalPages}
+                  value={pageInput}
+                  onChange={handlePageInputChange}
+                  className="w-16 h-8 text-center"
+                  disabled={isLoading}
+                />
+                <span className="text-sm">of {searchData.totalPages}</span>
+              </form>
 
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === searchData.totalPages}
+                disabled={currentPage === searchData.totalPages || isLoading}
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>

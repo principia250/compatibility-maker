@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ELEMENT_NAME_MAX_LENGTH } from '@/constants/input-length';
 import {
   Select,
   SelectContent,
@@ -55,6 +56,7 @@ export const AddNodeDialog = ({
           placeholder="Enter item name..."
           value={name}
           onChange={(e) => setName(e.target.value)}
+          maxLength={ELEMENT_NAME_MAX_LENGTH}
         />
 
         {/* サイド選択 */}

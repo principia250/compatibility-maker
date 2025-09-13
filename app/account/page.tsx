@@ -11,21 +11,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { DeleteAccountDialog } from '@/components/dialogs/auth/DeleteAccountDialog';
-import {
-  deleteAccount,
-} from '@/actions/account';
+import { deleteAccount } from '@/actions/account';
 import { redirect, useRouter } from 'next/navigation';
 import Loading from '@/components/loading';
 import CustomLink from '@/components/CustomLink';
 import { useTranslation } from '@/lib/i18n';
 
 export default function AccountPage() {
-  const {
-    user,
-    logout,
-    isLoading,
-    isAuthenticated,
-  } = useUser();
+  const { user, logout, isLoading, isAuthenticated } = useUser();
   const { addError } = useError();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true);
@@ -90,7 +83,7 @@ export default function AccountPage() {
                                 value={newUsername}
                                 onChange={(e) => setNewUsername(e.target.value)}
                                 placeholder="Enter new username"
-                                maxLength={50}
+                                maxLength={USERNAME_MAX_LENGTH}
                             />
                         </div>
                         

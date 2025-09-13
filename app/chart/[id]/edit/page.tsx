@@ -13,6 +13,7 @@ import { saveChartData } from '@/actions/composed/chart/edit/mutation';
 import { ExplanatoryNote } from '@/components/NodeAndEdge/ExplanatoryNote';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { TITLE_MAX_LENGTH } from '@/constants/input-length';
 import NodeAndEdge from '@/components/NodeAndEdge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ function isChartEditDataEqual(
   if (a.id !== b.id) return false;
   if (a.title !== b.title) return false;
   if (a.isPublic !== b.isPublic) return false;
+  if (a.canCopy !== b.canCopy) return false;
 
   const compareCategory = (
     ca: ChartEditData['leftCategory'],
@@ -72,8 +74,7 @@ function isChartEditDataEqual(
 export default function ChartEditPage() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true);
   const { t } = useTranslation();
-  const { user, isLoading, isAuthenticated } =
-    useUser();
+  const { user, isLoading, isAuthenticated } = useUser();
   const { addError } = useError();
   const [data, setData] = useState<ChartEditData | null>(null);
   const initialDataRef = useRef<ChartEditData | null>(null);
@@ -306,10 +307,12 @@ export default function ChartEditPage() {
         </div>
       )}
       {/* セーブボタン */}
-      <div className={clsx(
-        "flex flex-col justify-end gap-2",
-        "sm:flex-row-reverse sm:items-center sm:justify-end"
-        )}>
+      <div
+        className={clsx(
+          'flex flex-col justify-end gap-2',
+          'sm:flex-row-reverse sm:items-center sm:justify-end'
+        )}
+      >
         <div className="border border-primary rounded-lg px-2 py-2 flex flex-row gap-2 items-center">
           <CircleAlert className="w-8 h-8 text-red-600" />
           {t(
@@ -332,9 +335,11 @@ export default function ChartEditPage() {
         )}
       </div>
       <div>
-        {!data.title && <div className="text-red-600">
-          {t('タイトルを入力してください', 'Enter a title.')}
-        </div>}
+        {!data.title && (
+          <div className="text-red-600">
+            {t('タイトルを入力してください', 'Enter a title.')}
+          </div>
+        )}
         {!data.leftCategory.name && (
           <div className="text-red-600">
             {t('左側の名前を入力してください', 'Enter a left side name.')}
@@ -354,17 +359,20 @@ export default function ChartEditPage() {
       <Input
         id="chart-title"
         type="text"
-        maxLength={100}
+        maxLength={TITLE_MAX_LENGTH}
         value={data.title}
         onChange={(e) => setData({ ...data, title: e.target.value })}
       />
       {/* 公開設定 */}
+      <Label htmlFor="chart-public" className="text-primary">
+        {t('公開設定', 'Visibility')}
+      </Label>
       <RadioGroup
         value={data.isPublic ? 'public' : 'private'}
         onValueChange={(value: string) =>
           setData({ ...data, isPublic: value === 'public' })
         }
-        className="mb-8"
+        className="mb-2"
       >
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="public" id="public" />
@@ -375,6 +383,28 @@ export default function ChartEditPage() {
           <Label htmlFor="private">{`Private (${t('自分のみ閲覧可能', 'Only you can view')})`}</Label>
         </div>
       </RadioGroup>
+
+      {/* コピー許可設定 */}
+      <Label htmlFor="chart-can-copy" className="text-primary">
+        {t('コピー許可設定', 'Copying permission')}
+      </Label>
+      <RadioGroup
+        value={data.canCopy ? 'allow' : 'disallow'}
+        onValueChange={(value: string) =>
+          setData({ ...data, canCopy: value === 'allow' })
+        }
+        className="mb-8"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="allow" id="allow" />
+          <Label htmlFor="allow">{`Allow copying (${t('他のユーザーがコピー可能', 'Other users can copy this chart')})`}</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="disallow" id="disallow" />
+          <Label htmlFor="disallow">{`Disallow copying (${t('他のユーザーはコピー不可', 'Other users cannot copy this chart')})`}</Label>
+        </div>
+      </RadioGroup>
+
       {/* 凡例 */}
       <ExplanatoryNote />
       {/* 図 */}
@@ -408,10 +438,12 @@ export default function ChartEditPage() {
       />
 
       {/* セーブボタン */}
-      <div className={clsx(
-        "flex flex-col justify-end gap-2",
-        "sm:flex-row-reverse sm:items-center sm:justify-end"
-        )}>
+      <div
+        className={clsx(
+          'flex flex-col justify-end gap-2',
+          'sm:flex-row-reverse sm:items-center sm:justify-end'
+        )}
+      >
         <div className="border border-primary rounded-lg px-2 py-2 flex flex-row gap-2 items-center">
           <CircleAlert className="w-8 h-8 text-red-600" />
           {t(
@@ -434,9 +466,11 @@ export default function ChartEditPage() {
         )}
       </div>
       <div>
-        {!data.title && <div className="text-red-600">
-          {t('タイトルを入力してください', 'Enter a title.')}
-        </div>}
+        {!data.title && (
+          <div className="text-red-600">
+            {t('タイトルを入力してください', 'Enter a title.')}
+          </div>
+        )}
         {!data.leftCategory.name && (
           <div className="text-red-600">
             {t('左側の名前を入力してください', 'Enter a left side name.')}

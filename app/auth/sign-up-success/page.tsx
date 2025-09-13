@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
-  
+
 export default function Page() {
   const { t } = useTranslation();
   return (
@@ -21,15 +21,24 @@ export default function Page() {
                 Thank you for signing up!
               </CardTitle>
               <CardDescription>
-                {t('メールを確認してアカウントを確定してください', 'Check your email to confirm')}
+                {t(
+                  'メールを確認してアカウントを確定してください',
+                  'Check your email to confirm'
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm">
-                {t('サインアップが完了しました。メールを確認してアカウントを確定してください。', 'You&apos;ve successfully signed up. Please check your email to confirm your account before signing in.')}
+                {t(
+                  'サインアップが完了しました。メールを確認してアカウントを確定してください。',
+                  'You&apos;ve successfully signed up. Please check your email to confirm your account before signing in.'
+                )}
               </p>
               <p className="text-sm">
-                {t('迷惑メールフォルダに入っている場合がありますので、お手数ですがご確認ください。', 'Please check your email folder for spam.')}
+                {t(
+                  '迷惑メールフォルダに入っている場合がありますので、お手数ですがご確認ください。',
+                  'Please check your email folder for spam.'
+                )}
               </p>
             </CardContent>
           </Card>

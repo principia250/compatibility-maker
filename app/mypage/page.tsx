@@ -32,8 +32,7 @@ function MypageContent() {
   const [isLoadingState, setIsLoadingState] = useState<boolean>(true);
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'myChart';
-  const { user, isLoading, isAuthenticated } =
-    useUser();
+  const { user, isLoading, isAuthenticated } = useUser();
   const { addError } = useError();
   const [mypageData, setMypageData] = useState<MypageData | null>(null);
   const [isDuplicating, setIsDuplicating] = useState<string | null>(null);
@@ -70,7 +69,9 @@ function MypageContent() {
   const handleDuplicate = async (chartId: string) => {
     setIsDuplicating(chartId);
     try {
-      const result: Response<{ newChartId: string }> = await duplicateChart({ chartId });
+      const result: Response<{ newChartId: string }> = await duplicateChart({
+        chartId,
+      });
       if (result.error) {
         addError(result.error.message);
         return;
@@ -97,7 +98,9 @@ function MypageContent() {
 
     setIsDeleting(chartToDelete.id);
     try {
-      const result: Response<void> = await deleteChart({ chartId: chartToDelete.id });
+      const result: Response<void> = await deleteChart({
+        chartId: chartToDelete.id,
+      });
       if (result.error) {
         addError(result.error.message);
         return;
@@ -142,12 +145,23 @@ function MypageContent() {
             {mypageData?.maxCharts &&
             mypageData?.charts &&
             mypageData?.maxCharts > mypageData?.charts.length ? (
-              <CreateChartDialog>
-                <Button variant="positive" className="w-full">
-                  <Plus className="w-4 h-4" />
-                  Create a compatibility chart
-                </Button>
-              </CreateChartDialog>
+              <>
+                <CreateChartDialog>
+                  <Button variant="positive" className="w-full">
+                    <Plus className="w-4 h-4" />
+                    Create a compatibility chart
+                  </Button>
+                </CreateChartDialog>
+                {/* 他のユーザーの図を複製するリンク */}
+                <div className="text-center">
+                  <Link
+                    href="/search"
+                    className="text-primary hover:text-primary/80 underline text-sm"
+                  >
+                    {t('他のユーザーの図を複製', "Copy other users' charts")}
+                  </Link>
+                </div>
+              </>
             ) : (
               <span className="text-red-600">
                 {t(
@@ -156,6 +170,7 @@ function MypageContent() {
                 )}
               </span>
             )}
+
             {mypageData?.charts.map((chart) => (
               <div
                 className="border border-white rounded-xl p-4 flex flex-row gap-2 items-center"

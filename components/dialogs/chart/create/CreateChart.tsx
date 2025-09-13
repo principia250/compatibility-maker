@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TITLE_MAX_LENGTH } from '@/constants/input-length';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { createChart } from '@/actions/core/chart/mutation';
 import { useUser } from '@/hooks/use-user';
@@ -90,7 +91,7 @@ export function CreateChartDialog({ children }: CreateChartProps) {
               placeholder="Enter chart name..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              maxLength={100}
+              maxLength={TITLE_MAX_LENGTH}
             />
           </div>
 
