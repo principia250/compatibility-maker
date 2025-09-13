@@ -19,13 +19,9 @@ export default async function Page({
             </CardHeader>
             <CardContent>
               {params?.error ? (
-                <p className="text-sm">
-                  Code error: {params.error}
-                </p>
+                <p className="text-sm">Code error: {params.error}</p>
               ) : (
-                <p className="text-sm">
-                  An unspecified error occurred.
-                </p>
+                <p className="text-sm">An unspecified error occurred.</p>
               )}
             </CardContent>
           </Card>

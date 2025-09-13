@@ -11,6 +11,7 @@ export interface ChartDetailData {
     username: string;
   };
   isPublic: boolean;
+  canCopy: boolean;
   leftCategory: {
     id: string;
     name: string;
@@ -63,6 +64,7 @@ export const fetchChartDetailData = async (props: {
                 id,
                 title,
                 is_public,
+                can_copy,
                 users!compatibility_charts_user_id_fkey (
                     id,
                     username
@@ -196,14 +198,14 @@ export const fetchChartDetailData = async (props: {
 
     // 一時的にleftCategoryとrightCategoryのelementsを代入
     let leftElements = chartData.left_categories[0]?.elements.map(
-      (element: any) => ({
+      (element) => ({
         id: element.id,
         name: element.name,
         score: calculateScore(element.id, 'left'),
       })
     );
     let rightElements = chartData.right_categories[0]?.elements.map(
-      (element: any) => ({
+      (element) => ({
         id: element.id,
         name: element.name,
         score: calculateScore(element.id, 'right'),
@@ -229,11 +231,12 @@ export const fetchChartDetailData = async (props: {
           username: chartData.users.username,
         },
         isPublic: chartData.is_public,
+        canCopy: chartData.can_copy,
         leftCategory: {
           id: chartData.left_categories[0]?.id || '',
           name: chartData.left_categories[0]?.name || '',
           elements:
-            leftElements?.map((element: any) => ({
+            leftElements?.map((element) => ({
               id: element.id,
               name: element.name,
             })) || [],
@@ -242,26 +245,26 @@ export const fetchChartDetailData = async (props: {
           id: chartData.right_categories[0]?.id || '',
           name: chartData.right_categories[0]?.name || '',
           elements:
-            rightElements?.map((element: any) => ({
+            rightElements?.map((element) => ({
               id: element.id,
               name: element.name,
             })) || [],
         },
         compatibilities:
-          chartData.compatibilities?.map((compatibility: any) => ({
+          chartData.compatibilities?.map((compatibility) => ({
             id: compatibility.id,
             leftElementId: compatibility.left_element_id,
             rightElementId: compatibility.right_element_id,
             compatibilityScore: compatibility.compatibility_scores?.score || 0,
             reverseCompatibilityScore:
               compatibility.reverse_compatibility_scores?.score || 0,
-            note: compatibility.note || null,
+            note: compatibility.note || undefined,
           })) || [],
         comments:
-          chartData.comments?.map((comment: any) => ({
+          chartData.comments?.map((comment) => ({
             id: comment.id,
             content: comment.content,
-            createdAt: comment.created_at,
+            createdAt: comment.created_at || new Date().toISOString(),
             user: {
               id: comment.users.id,
               username: comment.users.username,

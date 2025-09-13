@@ -14,6 +14,7 @@ import { AddNodeDialog } from '@/components/dialogs/chart/edit/AddNode';
 import { EditCompatibilityDialog } from '@/components/dialogs/chart/edit/EditCompatibility';
 import { EditRightNodeDialog } from '@/components/dialogs/chart/edit/EditRightNode';
 import { useTranslation } from '@/lib/i18n';
+import { CATEGORY_NAME_MAX_LENGTH } from '@/constants/input-length';
 
 const nodeGap = 20;
 
@@ -375,11 +376,14 @@ const NodeAndEdge = ({
                 onChange={(e) =>
                   handleCategoryNameChange?.('left', e.target.value)
                 }
+                maxLength={CATEGORY_NAME_MAX_LENGTH}
               />
             </div>
           ) : (
-            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
-              {leftCategoryName}
+            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg px-2">
+              <div className="text-center leading-tight line-clamp-2 overflow-hidden">
+                {leftCategoryName}
+              </div>
             </div>
           )}
           {/* ヘッダー */}
@@ -520,11 +524,14 @@ const NodeAndEdge = ({
                 onChange={(e) =>
                   handleCategoryNameChange?.('right', e.target.value)
                 }
+                maxLength={CATEGORY_NAME_MAX_LENGTH}
               />
             </div>
           ) : (
-            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg">
-              {rightCategoryName}
+            <div className="mt-[20px] w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg px-2">
+              <div className="text-center leading-tight line-clamp-2 overflow-hidden">
+                {rightCategoryName}
+              </div>
             </div>
           )}
           {/* ヘッダー */}
@@ -597,7 +604,10 @@ const NodeAndEdge = ({
       </div>
       {checkOneCompatibility() || !isEditing || (
         <div className="text-red-600">
-          {t("相性が全て設定されていないアイテムがあります。", "There are items for which all compatibility settings have not been configured.")}
+          {t(
+            '相性が全て設定されていないアイテムがあります。',
+            'There are items for which all compatibility settings have not been configured.'
+          )}
         </div>
       )}
 

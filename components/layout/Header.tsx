@@ -30,8 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
 
   // カスタムフックからユーザーデータを取得
-  const { isLoading, isAuthenticated, username, fetchUser, logout } =
-    useUser();
+  const { isLoading, isAuthenticated, username, fetchUser, logout } = useUser();
 
   // 言語設定を取得
   const { language, changeLanguage } = useLanguage();
@@ -115,10 +114,9 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 </div>
               </div>
             </Link>
-            <div className="text-sm bg-red-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">
-              Alpha
+            <div className="text-sm bg-blue-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">
+              Beta
             </div>
-            {/* <div className="text-sm bg-blue-700 h-[20px] w-[56px] rounded-full flex items-center justify-center">Beta</div> */}
           </div>
 
           {/* 右寄り */}
@@ -190,7 +188,9 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                       disabled={isLoading}
                       className="flex items-center gap-2"
                     >
-                      {isLoading ? 'Loading...' : username}
+                      <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {isLoading ? 'Loading...' : username}
+                      </span>
                       <ChevronDown
                         className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
                       />
@@ -281,7 +281,9 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                       disabled={isLoading}
                     >
                       <User className="w-4 h-4 mr-2" />
-                      {isLoading ? '読み込み中...' : username}
+                      <span className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {isLoading ? '読み込み中...' : username}
+                      </span>
                     </Button>
                     <Link
                       href="/mypage"

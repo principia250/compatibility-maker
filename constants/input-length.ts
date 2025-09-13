@@ -1,0 +1,6 @@
+export const TITLE_MAX_LENGTH = 100;
+export const USERNAME_MAX_LENGTH = 20;
+export const CATEGORY_NAME_MAX_LENGTH = 100;
+export const ELEMENT_NAME_MAX_LENGTH = 100;
+export const COMPATIBILITY_NOTE_MAX_LENGTH = 500;
+export const COMMENT_MAX_LENGTH = 500;

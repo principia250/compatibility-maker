@@ -5,6 +5,7 @@ import { useUser } from '@/hooks/use-user';
 import { useError } from '@/hooks/use-error';
 import Loading from '@/components/loading';
 import { useParams } from 'next/navigation';
+import { COMMENT_MAX_LENGTH } from '@/constants/input-length';
 import {
   fetchChartDetailData,
   ChartDetailData,
@@ -13,21 +14,21 @@ import {
   addComment,
   toggleBookmark,
   toggleGood,
+  copyChart,
 } from '@/actions/composed/chart-detail/mutation';
 import CustomLink from '@/components/CustomLink';
 import { ExplanatoryNote } from '@/components/NodeAndEdge/ExplanatoryNote';
 import NodeAndEdge from '@/components/NodeAndEdge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Bookmark, ThumbsUp } from 'lucide-react';
+import { Bookmark, ThumbsUp, Copy } from 'lucide-react';
 import { clsx } from 'clsx';
 import { CommentCard } from '@/components/ui/comment-card';
 import { useTranslation } from '@/lib/i18n';
 
 export default function ChartDetailPage() {
   const { t } = useTranslation();
-  const { user, isLoading, isAuthenticated } =
-    useUser();
+  const { user, isLoading, isAuthenticated } = useUser();
   const { addError } = useError();
   const params = useParams<{ id: string }>();
   const chartId = params?.id;
@@ -39,6 +40,7 @@ export default function ChartDetailPage() {
     null
   );
   const [optimisticGood, setOptimisticGood] = useState<boolean | null>(null);
+  const [isCopying, setIsCopying] = useState<boolean>(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -189,6 +191,31 @@ export default function ChartDetailPage() {
     }
   };
 
+  const handleCopyChart = async () => {
+    if (!user?.id || !chartId || !data?.canCopy) {
+      return;
+    }
+
+    setIsCopying(true);
+    try {
+      const result = await copyChart({
+        sourceChartId: chartId,
+        targetUserId: user.id,
+      });
+
+      if (result.data?.chartId) {
+        // コピー成功時は編集画面に遷移
+        window.location.href = `/chart/${result.data.chartId}/edit`;
+      } else {
+        addError(result.error?.message || 'Failed to copy chart');
+      }
+    } catch {
+      addError('Unexpected error occurred while copying chart');
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   if (isLoading || !data) {
     return <Loading />;
   }
@@ -234,6 +261,29 @@ export default function ChartDetailPage() {
         leftCategoryName={data.leftCategory.name}
         rightCategoryName={data.rightCategory.name}
       />
+      {/* コピーボタン */}
+      {isAuthenticated && (
+        <div className="flex flex-row justify-end">
+          {data.canCopy ? (
+            <Button
+              onClick={handleCopyChart}
+              disabled={isCopying}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              {isCopying
+                ? t('複製中...', 'Copying...')
+                : t('この図を複製', 'Copy this chart')}
+            </Button>
+          ) : (
+            <div className="text-sm text-gray-400">
+              {t('この図は複製できません。', 'This chart cannot be copied')}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ブックマークとグッド */}
       <div className="flex flex-row justify-end gap-4">
         {isAuthenticated ? (
@@ -292,7 +342,7 @@ export default function ChartDetailPage() {
               placeholder="Add a comment..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              maxLength={300}
+              maxLength={COMMENT_MAX_LENGTH}
             />
             {comment.length > 0 && (
               <div className="flex justify-end">

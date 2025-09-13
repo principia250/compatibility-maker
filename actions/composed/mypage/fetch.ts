@@ -51,12 +51,14 @@ export const fetchMypageData = async (
                 `
         )
         .eq('user_id', props.userId)
-        .eq('compatibility_charts.is_public', true),
+        .eq('compatibility_charts.is_public', true)
+        .order('created_at', { ascending: false }),
 
       supabase
         .from('compatibility_charts')
         .select('id, title')
-        .eq('user_id', props.userId),
+        .eq('user_id', props.userId)
+        .order('updated_at', { ascending: false }),
 
       supabase
         .from('users')

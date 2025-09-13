@@ -3,11 +3,15 @@
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n';
 
-const NewsCard = ({ date, content }: { date: string; content: string }) => {
+const NewsCard = ({ date, contents }: { date: string; contents: string[] }) => {
   return (
     <div className="border-b border-white p-2">
       <div className="text-sm text-white">{date}</div>
-      <div className="text-white">{content}</div>
+      {contents.map((content, index) => (
+        <div key={index} className="text-white">
+          {content}
+        </div>
+      ))}
     </div>
   );
 };
@@ -54,7 +58,7 @@ export default function HomePage() {
           <li>
             •{' '}
             {t(
-              '現在アルファ版のため、サービス内容が変更される可能性があります',
+              '現在ベータ版のため、サービス内容が変更される可能性があります',
               'Currently in alpha version, service content may change'
             )}
           </li>
@@ -69,8 +73,20 @@ export default function HomePage() {
         {/* コンテンツ部分 */}
         <div className="border border-white rounded-lg p-4">
           <NewsCard
+            date="2025/09/14"
+            contents={[
+              t('ベータ版に移行しました。', 'The site is now in beta.'),
+              t(
+                '他ユーザーが作成した相性図をコピーできるようになりました。',
+                'You can now copy compatibility charts created by other users.'
+              ),
+            ]}
+          />
+          <NewsCard
             date="2025/09/07"
-            content={t('サイトを公開しました。', 'The site is now open.')}
+            contents={[
+              t('アルファ版を公開しました。', 'The site is now in alpha.'),
+            ]}
           />
         </div>
       </div>

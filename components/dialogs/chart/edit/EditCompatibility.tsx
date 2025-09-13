@@ -12,6 +12,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+  ELEMENT_NAME_MAX_LENGTH,
+  COMPATIBILITY_NOTE_MAX_LENGTH,
+} from '@/constants/input-length';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -162,6 +166,7 @@ export const EditCompatibilityDialog = ({
               value={localLeftNodeName}
               onChange={(e) => setLocalLeftNodeName(e.target.value)}
               placeholder="Enter item name"
+              maxLength={ELEMENT_NAME_MAX_LENGTH}
             />
           </div>
 
@@ -180,7 +185,7 @@ export const EditCompatibilityDialog = ({
                   <div
                     key={rightNode.id}
                     className={clsx(
-                      "border rounded-lg p-2",
+                      'border rounded-lg p-2',
                       // 相性が全て設定されていない場合は赤くする
                       currentScore === null ? 'border-red-600' : 'border-white'
                     )}
@@ -227,6 +232,7 @@ export const EditCompatibilityDialog = ({
                             handleNoteChange(rightNode.id, e.target.value)
                           }
                           placeholder="Enter note (optional)"
+                          maxLength={COMPATIBILITY_NOTE_MAX_LENGTH}
                         />
                       </div>
                     </div>

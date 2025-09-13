@@ -2,6 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { Response } from '@/actions/types/response';
+import { revalidatePath } from 'next/cache';
+import { MAX_CHARTS } from '@/constants/max-charts';
+import { COMMENT_MAX_LENGTH } from '@/constants/input-length';
 
 export interface AddCommentParams {
   chartId: string;
@@ -35,17 +38,45 @@ export interface ToggleGoodResult {
   isGood: boolean;
 }
 
+export interface CopyChartParams {
+  sourceChartId: string;
+  targetUserId: string;
+}
+
+export interface CopyChartResult {
+  chartId: string;
+}
+
 export const addComment = async (
   props: AddCommentParams
 ): Promise<Response<AddCommentResult>> => {
   const supabase = await createClient();
 
   try {
+    // バリデーション
+    if (!props.content || props.content.trim().length === 0) {
+      return {
+        data: null,
+        error: {
+          message: 'Enter a comment',
+        },
+      };
+    }
+
+    if (props.content.length > COMMENT_MAX_LENGTH) {
+      return {
+        data: null,
+        error: {
+          message: `Enter a comment of ${COMMENT_MAX_LENGTH} characters or less`,
+        },
+      };
+    }
+
     // コメントを挿入
     const { data: commentData, error: insertError } = await supabase
       .from('comments')
       .insert({
-        content: props.content,
+        content: props.content.trim(),
         user_id: props.userId,
         chart_id: props.chartId,
       })
@@ -242,6 +273,116 @@ export const toggleGood = async (
       data: null,
       error: {
         message: 'Unexpected error occurred',
+      },
+    };
+  }
+};
+
+export const copyChart = async (
+  props: CopyChartParams
+): Promise<Response<CopyChartResult>> => {
+  try {
+    const supabase = await createClient();
+
+    // 1. ユーザーの最大チャート数を取得
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select(
+        `
+        plan_expires_at,
+        plans:plan_id(
+          max_charts
+        )
+      `
+      )
+      .eq('id', props.targetUserId)
+      .single();
+
+    if (userError) {
+      console.error('User data fetch error:', userError);
+      return {
+        data: null,
+        error: {
+          message: 'Failed to fetch user data',
+        },
+      };
+    }
+
+    // 2. 最大チャート数を計算
+    const maxCharts =
+      userData?.plan_expires_at === undefined ||
+      userData?.plan_expires_at === null ||
+      userData?.plan_expires_at < new Date().toISOString()
+        ? MAX_CHARTS
+        : userData?.plans.max_charts;
+
+    // 3. 現在のチャート数を取得
+    const { data: chartsData, error: chartsError } = await supabase
+      .from('compatibility_charts')
+      .select('id')
+      .eq('user_id', props.targetUserId);
+
+    if (chartsError) {
+      console.error('Charts count fetch error:', chartsError);
+      return {
+        data: null,
+        error: {
+          message: 'Failed to fetch charts count',
+        },
+      };
+    }
+
+    // 4. 最大チャート数に達しているかチェック
+    if (chartsData && chartsData.length >= maxCharts) {
+      return {
+        data: null,
+        error: {
+          message: 'Maximum chart limit reached',
+        },
+      };
+    }
+
+    // 5. Call the PostgreSQL function to copy the chart
+    const { data, error } = await supabase.rpc('copy_chart', {
+      source_chart_id: props.sourceChartId,
+      target_user_id: props.targetUserId,
+    });
+
+    if (error) {
+      console.error('Error copying chart:', error);
+      return {
+        data: null,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    if (!data) {
+      return {
+        data: null,
+        error: {
+          message: 'Failed to copy chart',
+        },
+      };
+    }
+
+    // Revalidate relevant pages
+    revalidatePath('/mypage');
+    revalidatePath('/search');
+
+    return {
+      data: {
+        chartId: data,
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error('Unexpected error copying chart:', error);
+    return {
+      data: null,
+      error: {
+        message: 'Unexpected error occurred while copying chart',
       },
     };
   }

@@ -15,12 +15,12 @@ const nextConfig: NextConfig = {
   experimental: {
     webpackBuildWorker: true,
   },
-  
+
   // 画像最適化
   images: {
     formats: ['image/webp', 'image/avif'],
   },
-  
+
   // セキュリティヘッダー
   async headers() {
     return [
@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 };
 

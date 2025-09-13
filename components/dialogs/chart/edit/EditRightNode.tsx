@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ELEMENT_NAME_MAX_LENGTH } from '@/constants/input-length';
 
 interface EditRightNodeDialogProps {
   open: boolean;
@@ -62,6 +63,7 @@ export const EditRightNodeDialog = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter item name"
+              maxLength={ELEMENT_NAME_MAX_LENGTH}
             />
           </div>
         </div>
