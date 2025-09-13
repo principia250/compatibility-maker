@@ -227,7 +227,7 @@ export const EditCompatibilityDialog = ({
                         <Input
                           value={compatibility?.note ?? ''}
                           // compatibilityが無い場合はdisabled
-                          disabled={!currentScore}
+                          disabled={!currentScore && currentScore !== 0}
                           onChange={(e) =>
                             handleNoteChange(rightNode.id, e.target.value)
                           }
