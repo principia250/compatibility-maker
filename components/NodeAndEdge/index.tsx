@@ -28,6 +28,7 @@ const NodeAndEdge = ({
   rightCanHide,
   leftCategoryName,
   rightCategoryName,
+  hiddenElementIds,
   isEditing,
   handleCategoryNameChange,
   handleAddNode,
@@ -40,19 +41,51 @@ const NodeAndEdge = ({
   const [centerWidth, setCenterWidth] = useState(1);
   const [centerWidthSm, setCenterWidthSm] = useState(1);
   const { t } = useTranslation();
+  const [hiddenElementIdsLocal, setHiddenElementIdsLocal] =
+    useState(hiddenElementIds);
+
   // propsを再代入
   const [leftElementsLocal, setLeftElementsLocal] = useState(
     leftElements?.map((element) => ({
       ...element,
-      isVisible: true,
+      isVisible: false,
     }))
   );
   const [rightElementsLocal, setRightElementsLocal] = useState(
     rightElements?.map((element) => ({
       ...element,
-      isVisible: true,
+      isVisible: false,
     }))
   );
+
+  useEffect(() => {
+    let newLeftElementsLocal = leftElementsLocal;
+    let newRightElementsLocal = rightElementsLocal;
+    // isVisibleを更新
+    newLeftElementsLocal = newLeftElementsLocal?.map((element) => ({
+      ...element,
+      isVisible: !hiddenElementIdsLocal.includes(element.id),
+    }));
+    newRightElementsLocal = newRightElementsLocal?.map((element) => ({
+      ...element,
+      isVisible: !hiddenElementIdsLocal.includes(element.id),
+    }));
+
+    // 要素を並び替え
+    // 並び替え専用関数を使用
+    const {
+      leftElements: sortedLeftElements,
+      rightElements: sortedRightElements,
+    } = sortElements(newLeftElementsLocal ?? [], newRightElementsLocal ?? []);
+    setLeftElementsLocal(sortedLeftElements);
+    setRightElementsLocal(sortedRightElements);
+  }, [hiddenElementIdsLocal, leftElements, rightElements]);
+  // leftElementsLocalとrightElementsLocalは含めない
+
+  // hiddenElementIdsが変更された時にhiddenElementIdsLocalを更新
+  useEffect(() => {
+    setHiddenElementIdsLocal(hiddenElementIds);
+  }, [hiddenElementIds]);
 
   // 相性編集ダイアログの状態
   const [editDialogOpen, setEditDialogOpen] = useState(false);

@@ -20,6 +20,7 @@ export interface NodeAndEdgeProps {
   rightDisplayScore: boolean;
   leftCategoryName: string;
   rightCategoryName: string;
+  hiddenElementIds: string[];
   // 編集系
   isEditing: boolean;
   handleCategoryNameChange?: (side: 'left' | 'right', name: string) => void;

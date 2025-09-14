@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@/hooks/use-user';
 import { useError } from '@/hooks/use-error';
+import { useTutorial } from '@/hooks/use-tutorial';
 import Loading from '@/components/loading';
 import { useParams } from 'next/navigation';
 import { COMMENT_MAX_LENGTH } from '@/constants/input-length';
@@ -25,11 +26,18 @@ import { Bookmark, ThumbsUp, Copy } from 'lucide-react';
 import { clsx } from 'clsx';
 import { CommentCard } from '@/components/ui/comment-card';
 import { useTranslation } from '@/lib/i18n';
+import { HowToUse } from '@/components/dialogs/chart/HowToUse';
+import { ElementVisibilityDialog } from '@/components/dialogs/chart/ElementVisibility';
 
 export default function ChartDetailPage() {
   const { t } = useTranslation();
   const { user, isLoading, isAuthenticated } = useUser();
   const { addError } = useError();
+  const {
+    isCompleted: isTutorialCompleted,
+    isLoading: isTutorialLoading,
+    markCompleted,
+  } = useTutorial('how-to-use');
   const params = useParams<{ id: string }>();
   const chartId = params?.id;
   const [data, setData] = useState<ChartDetailData | null>(null);
@@ -41,12 +49,25 @@ export default function ChartDetailPage() {
   );
   const [optimisticGood, setOptimisticGood] = useState<boolean | null>(null);
   const [isCopying, setIsCopying] = useState<boolean>(false);
+  // チュートリアルダイアログの状態
+  const [showTutorial, setShowTutorial] = useState<boolean>(false);
+  // 要素表示設定ダイアログの状態
+  const [showElementVisibilityDialog, setShowElementVisibilityDialog] =
+    useState<boolean>(false);
+  // 要素表示設定ダイアログが表示済みかどうか
+  const [elementVisibilityDialogShown, setElementVisibilityDialogShown] =
+    useState<boolean>(false);
+  // 非表示にする要素のIDリスト
+  const [hiddenElementIds, setHiddenElementIds] = useState<string[]>([]);
+  // データ取得済みフラグ
+  const dataFetched = useRef<boolean>(false);
 
   useEffect(() => {
     const fetch = async () => {
-      if (!chartId) {
+      if (!chartId || dataFetched.current) {
         return;
       }
+      dataFetched.current = true;
       // 未ログインユーザーでもチャートデータを取得
       const { data: data, error: error } = await fetchChartDetailData({
         loginUserId: user?.id,
@@ -54,6 +75,7 @@ export default function ChartDetailPage() {
       });
       if (error) {
         addError(error.message);
+        dataFetched.current = false; // エラー時はリセット
         return;
       }
       setData(data);
@@ -62,7 +84,28 @@ export default function ChartDetailPage() {
     if (!isLoading) {
       fetch();
     }
-  }, [user, chartId, isLoading]); // addErrorを依存配列から削除
+  }, [user, chartId, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // チュートリアル表示の制御
+  useEffect(() => {
+    if (!isTutorialLoading && !isTutorialCompleted && data) {
+      setShowTutorial(true);
+    }
+  }, [isTutorialLoading, isTutorialCompleted, data]);
+
+  // 要素表示設定ダイアログの表示制御
+  useEffect(() => {
+    if (
+      data &&
+      !showTutorial &&
+      isTutorialCompleted &&
+      !elementVisibilityDialogShown
+    ) {
+      // チュートリアルが完了している場合、要素表示設定ダイアログを表示
+      setShowElementVisibilityDialog(true);
+      setElementVisibilityDialogShown(true);
+    }
+  }, [data, showTutorial, isTutorialCompleted, elementVisibilityDialogShown]);
 
   const handleSubmitComment = async () => {
     if (!comment.trim() || !user?.id || !chartId) {
@@ -216,6 +259,34 @@ export default function ChartDetailPage() {
     }
   };
 
+  const handleTutorialComplete = (dontShowAgain: boolean) => {
+    if (dontShowAgain) {
+      markCompleted();
+    }
+    setShowTutorial(false);
+
+    // チュートリアル完了後、要素表示設定ダイアログを表示
+    if (data && !elementVisibilityDialogShown) {
+      setShowElementVisibilityDialog(true);
+      setElementVisibilityDialogShown(true);
+    }
+  };
+
+  const handleTutorialClose = () => {
+    setShowTutorial(false);
+
+    // チュートリアルが閉じられた後、要素表示設定ダイアログを表示
+    if (data && !elementVisibilityDialogShown) {
+      setShowElementVisibilityDialog(true);
+      setElementVisibilityDialogShown(true);
+    }
+  };
+
+  const handleElementVisibilityConfirm = (hiddenElementIds: string[]) => {
+    setHiddenElementIds(hiddenElementIds);
+    setShowElementVisibilityDialog(false);
+  };
+
   if (isLoading || !data) {
     return <Loading />;
   }
@@ -257,6 +328,7 @@ export default function ChartDetailPage() {
         rightCanHide={true}
         leftDisplayScore={true}
         rightDisplayScore={true}
+        hiddenElementIds={hiddenElementIds}
         isEditing={false}
         leftCategoryName={data.leftCategory.name}
         rightCategoryName={data.rightCategory.name}
@@ -382,6 +454,24 @@ export default function ChartDetailPage() {
           </CustomLink>
         </div>
       </div>
+
+      {/* チュートリアルダイアログ */}
+      <HowToUse
+        isOpen={showTutorial}
+        onClose={handleTutorialClose}
+        onComplete={handleTutorialComplete}
+      />
+
+      {/* 要素表示設定ダイアログ */}
+      <ElementVisibilityDialog
+        isOpen={showElementVisibilityDialog}
+        onClose={() => setShowElementVisibilityDialog(false)}
+        onConfirm={handleElementVisibilityConfirm}
+        leftCategoryName={data.leftCategory.name}
+        rightCategoryName={data.rightCategory.name}
+        leftElements={data.leftCategory.elements}
+        rightElements={data.rightCategory.elements}
+      />
     </div>
   );
 }

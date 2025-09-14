@@ -428,6 +428,7 @@ export default function ChartEditPage() {
         rightDisplayScore={true}
         leftCategoryName={data.leftCategory.name}
         rightCategoryName={data.rightCategory.name}
+        hiddenElementIds={[]}
         // 編集系
         isEditing={true}
         handleCategoryNameChange={handleCategoryNameChange}
