@@ -9,7 +9,7 @@ interface LanguageState {
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set) => ({
-      language: 'en',
+      language: 'ja',
       setLanguage: (language) => set({ language }),
     }),
     {
