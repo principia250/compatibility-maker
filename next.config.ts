@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  // Turbopack設定（webpack設定がある場合に必要）
+  turbopack: {},
   // HMR設定
   experimental: {
     webpackBuildWorker: true,
