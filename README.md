@@ -1,105 +1,125 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# SOUKOKU（相性メーカー）
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+ゲームなどの相性関係を整理・可視化し、他のユーザーと共有できる Web アプリケーションです。
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+個人で企画・設計・実装・デプロイまで担当しています。
 
-## Features
+**公開 URL**: [https://soukoku.work](https://soukoku.work)  
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+---
 
-## Demo
+## 制作背景
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+対戦ゲームや戦略ゲームでは、じゃんけんのような相性情報が攻略の中心になります。じゃんけんは3つの手（選択肢）から成り立ちますが、大抵のゲームではより多くの手が存在し、さらにそれぞれの手の組み合わせに異なるリスク・リターンが設定されており、とても複雑なものになっています。そのため、相性図を作成して、それぞれの手の組み合わせを可視化することで、攻略の助けになると考えました。
 
-## Deploy to Vercel
+SOUKOKU は、左右の要素と色付き矢印で双方向の相性を可視化し、作成した図を公開・検索・コピーできる場所を目指しています。
 
-Vercel deployment will guide you through creating a Supabase account and project.
+---
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 主な機能
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+| 機能 | 内容 |
+| --- | --- |
+| 相性図の作成・編集 | 左右カテゴリ、要素、相性スコア（× / △ / − / ○ / ◎）、補足メモ |
+| 公開設定 | 公開 / 非公開。コピー可否も設定可能 |
+| 検索 | タイトルまたは作者名で検索。複数キーワード AND、更新日 / いいね数ソート、ページネーション |
+| ソーシャル機能 | いいね、ブックマーク、コメント |
+| 複製・コピー | 自分の図の複製、他ユーザーの公開図のコピー |
+| 表示補助 | 要素の表示 / 非表示、初回閲覧時の図の見方チュートリアル |
+| 多言語 | 日本語 / 英語の切り替え |
+| アカウント | 新規登録、ログイン、パスワードリセット、ユーザー名変更、退会 |
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+そのほか、使い方ページ、利用規約、プライバシーポリシー、ガイドラインを用意しています。
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+---
 
-## Clone and run locally
+## 技術スタック
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+| 領域 | 技術 |
+| --- | --- |
+| フロントエンド | Next.js（App Router） / React 19 / TypeScript |
+| スタイリング | Tailwind CSS / shadcn/ui / Radix UI |
+| 状態管理 | Zustand |
+| サーバー処理 | Next.js Server Actions |
+| データベース / 認証 | Supabase（PostgreSQL, Auth, Row Level Security） |
+| ホスティング | Vercel |
+| ドメイン | Cloudflare |
+| メール | Resend |
 
-2. Create a Next.js app using the Supabase Starter template npx command
+---
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+## 設計で意識したこと
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### 1. Server Actions を core / composed に分ける
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+このプロジェクトではWebアプリのみを想定しているので、バックエンド処理は API Routes ではなく Server Actions を採用しました。処理は次の 2 層に分け、画面ごとのロジックが肥大化しないようにしています。
 
-3. Use `cd` to change into the app's directory
+- `actions/core` … 単一テーブルに近い、再利用しやすい操作
+- `actions/composed` … 相性図編集・検索・マイページなど、機能単位の組み立て
 
-   ```bash
-   cd with-supabase-app
-   ```
+戻り値は `Response<T>`（`data` / `error`）に揃え、画面側のエラー表示を共通化しています。
 
-4. Rename `.env.example` to `.env.local` and update the following:
+### 2. 複数テーブルの更新は PostgreSQL 関数で原子化する
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+相性図の保存・コピー・作成・退会は、要素・相性・カテゴリなど複数テーブルにまたがります。アプリケーション側で順番に UPDATE / INSERT すると、途中失敗時に不整合が残ります。
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+そのため、次のような処理は `SECURITY DEFINER` の PostgreSQL 関数に寄せ、1 トランザクションで完了させています。
 
-5. You can now run the Next.js local development server:
+- `save_chart_data` … タイトル、カテゴリ、要素、相性を一括保存
+- `copy_chart` / 複製用関数 … 公開図や自分の図をディープコピー
+- `create_chart_with_categories` … 図と左右カテゴリを同時作成
+- `delete_user_account` … 関連データを含めた退会
 
-   ```bash
-   npm run dev
-   ```
+Server Actions 側では入力長などのバリデーションを行い、その後に RPC を呼ぶ形です。
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+### 3. RLS とアプリケーション側チェックの二重化
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+PostgreSQL の Row Level Security で、次を保証しています。
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+- 自分の相性図だけ作成・更新・削除できる
+- 公開図は誰でも閲覧できる
+- 子テーブル（要素、相性、コメントなど）も親図の公開状態 / 所有者に従う
 
-## Feedback and issues
+アプリ側の認証チェックだけに頼らず、DB 層でもアクセス範囲を制限しています。
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### 4. 相性図はライブラリに頼らず自前描画する
 
-## More Supabase examples
+ノード＆エッジの表示は React Flow や D3 を使わず、DOM と CSS で実装しています。
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- 左右ノードの位置から矢印の長さと角度を計算
+- 相性スコアに応じた色と記号
+- 双方向の相性（往路 / 復路）
+- メモ付き矢印はクリックで詳細表示
+- PC / スマートフォンでレイアウトを切り替え
+
+グラフライブラリを入れると依存とバンドルが増える一方、このサービスの図は「左右 2 群 + 全組み合わせの矢印」に用途が限られるため、要件に合わせて自前実装しました。
+
+### 5. 検索はインデックスを前提に設計する
+
+公開図の検索では、タイトル / 作者名の部分一致と、更新日・いいね数での並び替えを行います。`pg_trgm` の GIN インデックスや、公開図に限定した部分インデックスを追加し、ILIKE 検索でも現実的な速度が出るようにしています。
+
+### 6. 本番公開を前提にした周辺機能
+
+機能本体だけでなく、公開サービスとして必要なものを先に揃えています。
+
+- Cookie ベースのセッション更新（middleware）
+- セキュリティヘッダ（`X-Frame-Options`, `X-Content-Type-Options` など）
+- いいね / ブックマークの楽観的更新
+- sitemap / Open Graph / robots.txt / PWA manifest
+- 利用規約・プライバシーポリシー・退会
+
+---
+
+## 画面構成
+
+| パス | 内容 |
+| --- | --- |
+| `/` | トップ（サービス説明） |
+| `/search` | 公開相性図の検索 |
+| `/chart/[id]` | 相性図の閲覧、いいね、ブックマーク、コピー、コメント |
+| `/chart/[id]/edit` | 相性図の編集 |
+| `/mypage` | 作成した図、ブックマーク |
+| `/account` | アカウント設定、退会 |
+| `/how-to-use` | 図の見方 |
+| `/guidelines` | 利用規約 |
+| `/privacy` | プライバシーポリシー |
