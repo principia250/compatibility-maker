@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   keywords: 'compatibility chart, chart maker, relationship analysis',
   authors: [{ name: 'SOUKOKU Team' }],
   robots: 'index, follow',
+  metadataBase: new URL('https://soukoku.work'),
   openGraph: {
     title: 'SOUKOKU - Compatibility Maker',
     description: 'Create and manage compatibility charts',
