@@ -35,8 +35,14 @@ export const Node = ({
       {displayScore && (
         <div
           className={clsx(
-            !isVisible && 'border-opacity-50 text-white text-opacity-50',
-            allCompatibilityExsist ? 'border-primary' : 'border-[#FF0000]',
+            allCompatibilityExsist
+              ? isVisible
+                ? 'border-primary'
+                : 'border-primary/50'
+              : isVisible
+                ? 'border-[#FF0000]'
+                : 'border-[#FF0000]/50',
+            !isVisible && 'text-white/50',
             'border rounded-l-lg',
             'text-xs sm:text-base w-[35px] sm:w-[50px] h-full p-2',
             'flex items-center justify-center'
@@ -50,13 +56,19 @@ export const Node = ({
       {/* テキスト */}
       <div
         className={clsx(
-          !isVisible && 'border-opacity-50 text-white text-opacity-50',
-          allCompatibilityExsist ? 'border-primary' : 'border-[#FF0000]',
+          allCompatibilityExsist
+            ? isVisible
+              ? 'border-primary'
+              : 'border-primary/50'
+            : isVisible
+              ? 'border-[#FF0000]'
+              : 'border-[#FF0000]/50',
+          !isVisible && 'text-white/50',
           'border-t border-b h-full',
           'flex-1 text-xs sm:text-base p-1 sm:p-2 flex items-center',
           !displayScore && 'border-l rounded-l-lg',
           !canHide && 'border-r rounded-r-lg',
-          onClick && 'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10'
+          onClick && 'cursor-pointer hover:bg-gray-100/10'
         )}
         onClick={onClick}
       >
@@ -69,8 +81,13 @@ export const Node = ({
       {canHide && (
         <div
           className={clsx(
-            !isVisible && 'border-opacity-50',
-            allCompatibilityExsist ? 'border-primary' : 'border-[#FF0000]',
+            allCompatibilityExsist
+              ? isVisible
+                ? 'border-primary'
+                : 'border-primary/50'
+              : isVisible
+                ? 'border-[#FF0000]'
+                : 'border-[#FF0000]/50',
             'w-[20px] sm:w-[40px] h-full border rounded-r-lg',
             'flex items-center justify-center',
             'cursor-pointer'
@@ -80,7 +97,7 @@ export const Node = ({
           {isVisible ? (
             <Eye className="w-4 h-4 sm:w-6 sm:h-6" />
           ) : (
-            <EyeOff className="w-4 h-4 sm:w-6 sm:h-6 text-white text-opacity-50" />
+            <EyeOff className="w-4 h-4 sm:w-6 sm:h-6 text-white/50" />
           )}
         </div>
       )}
